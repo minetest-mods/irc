@@ -55,8 +55,10 @@ TIMEOUT = 60          -- connection timeout
 NETWORK = "localhost" -- default network
 PORT = 6667           -- default port
 NICK = "luabot"       -- default nick
-USERNAME = "LuaIRC"   -- default username
-REALNAME = "LuaIRC"   -- default realname
+--USERNAME = "LuaIRC"   -- default username
+USERNAME = "minetest"   -- default username
+--REALNAME = "LuaIRC"   -- default realname
+REALNAME = "minetest"   -- default realname
 DEBUG = false         -- whether we want extra debug information
 OUTFILE = nil         -- file to send debug output to - nil is stdout
 -- }}}
@@ -92,13 +94,17 @@ end
 
 -- begin_main_loop {{{
 local function begin_main_loop()
-    while main_loop_iter() do end
+    --while main_loop_iter() do end
 end
 -- }}}
 
+poll = main_loop_iter;
+
 -- incoming_message {{{
 local function incoming_message(sock)
-    local raw_msg = socket.try(sock:receive())
+    local rcvd = { sock:receive() };
+    if ((rcvd[1] == nil) and (rcvd[2] == "timeout")) then return true; end
+    local raw_msg = socket.try(base.unpack(rcvd))
     irc_debug._message("RECV", raw_msg)
     local msg = message._parse(raw_msg)
     misc._try_call_warn("Unhandled server message: " .. msg.command,
@@ -643,6 +649,11 @@ end
 -- }}}
 -- }}}
 
+--@@TEST@@
+local function outgoing_message ( )
+    return true;
+end
+
 -- public functions {{{
 -- server commands {{{
 -- connect {{{
@@ -683,10 +694,11 @@ function connect(args)
     irc_sock = base.assert(socket.connect(network, port))
     irc_sock:settimeout(timeout)
     _register_socket(irc_sock, 'r', incoming_message)
+    _register_socket(irc_sock, 'w', outgoing_message)
     if args.pass then send("PASS", args.pass) end
     send("NICK", nick)
     send("USER", username, get_ip(), network, realname)
-    begin_main_loop()
+    --begin_main_loop()
 end
 -- }}}
 

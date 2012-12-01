@@ -22,11 +22,7 @@ else
     exit 1;
 fi
 
-version="`cat "$srcdir/CMakeLists.txt" \
-    | grep 'MINETEST_IRC_VERSION' \
-    | sed -e 's/^set(MINETEST_IRC_VERSION \([^)]*\))/\1/'`";
-
-mkdir "$srcdir/irc-$version";
+mkdir "$srcdir/irc";
 
 files_luairc="\
 $srcdir/src/luairc/irc.lua
@@ -62,7 +58,7 @@ IFS='
 echo "Copying files...";
 for file in $files; do
     IFS="$oIFS";
-    cp -fr "$file" "$srcdir/irc-$version/";
+    cp -fr "$file" "$srcdir/irc";
 done
 
 echo "Operation completed successfully!";
