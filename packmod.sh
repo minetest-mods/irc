@@ -13,9 +13,9 @@ else
 fi
 
 if [ -e "$bindir/src/luasocket/libluasocket.dll" ]; then
-    lib="$bindir/src/luasocket/libluasocket.dll;
+    lib="$bindir/src/luasocket/libluasocket.dll";
 elif [ -e "$bindir/src/luasocket/libluasocket.so" ]; then
-    lib="$bindir/src/luasocket/libluasocket.so;
+    lib="$bindir/src/luasocket/libluasocket.so";
 else
     echo "Error: Couldn't find luasocket lib." >&2;
     echo "       Did you compile before running this script?" >&2;
@@ -24,19 +24,14 @@ fi
 
 version="`cat "$srcdir/CMakeLists.txt" \
     | grep 'MINETEST_IRC_VERSION' \
-    | sed -e 's/^set(MINETEST_IRC_VERSION \([^)]*\)/\1/'`";
+    | sed -e 's/^set(MINETEST_IRC_VERSION \([^)]*\))/\1/'`";
 
 mkdir "$srcdir/irc-$version";
 
 files_luairc="\
 $srcdir/src/luairc/irc.lua
-$srcdir/src/luairc/irc/channel.lua
-$srcdir/src/luairc/irc/constants.lua
-$srcdir/src/luairc/irc/ctcp.lua
-$srcdir/src/luairc/irc/dcc.lua
-$srcdir/src/luairc/irc/debug.lua
-$srcdir/src/luairc/irc/message.lua
-$srcdir/src/luairc/irc/misc.lua
+$srcdir/src/luairc/irc
+$srcdir/doc/LICENSE-LuaIRC.txt
 ";
 
 files_luasocket="\
@@ -48,11 +43,14 @@ $srcdir/src/luasocket/smtp.lua
 $srcdir/src/luasocket/socket.lua
 $srcdir/src/luasocket/tp.lua
 $srcdir/src/luasocket/url.lua
+$srcdir/doc/LICENSE-luasocket.txt
 $lib
 ";
 
 files="\
 $srcdir/src/init.lua
+$srcdir/README.txt
+$srcdir/doc/LICENSE.txt
 $files_luairc
 $files_luasocket
 ";
@@ -64,7 +62,7 @@ IFS='
 echo "Copying files...";
 for file in $files; do
     IFS="$oIFS";
-    cp "$file" "$srcdir/irc-$version/";
+    cp -fr "$file" "$srcdir/irc-$version/";
 done
 
 echo "Operation completed successfully!";
