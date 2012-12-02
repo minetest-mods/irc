@@ -1,4 +1,3 @@
-
 -- IRC Mod for Minetest
 -- (C) 2012 Diego Martínez <kaeza@users.sf.net>
 --
@@ -62,7 +61,7 @@ minetest.register_globalstep(function ( dtime )
     if (mt_irc.cur_time >= DTIME) then
         if (mt_irc.buffered_messages) then
             for _, t in ipairs(mt_irc.buffered_messages) do
-                irc.say(CHANNEL, "<"..t.name.."> "..(t.message or ""));
+                irc.say(CHANNEL, "[GAME:"..t.name.."]: "..(t.message or ""));
             end
             mt_irc.buffered_messages = nil;
         end
