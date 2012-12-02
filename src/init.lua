@@ -25,7 +25,7 @@ local CHANNEL = "#minetest-irc-testing";
 local DTIME = 0.5;
 
 -- Enable debug output (boolean, default false)
-local DEBUG = false;
+local DEBUG = true;
 
 local SERVER_NICK = "mt_game";
 
@@ -87,10 +87,13 @@ minetest.register_on_joinplayer(function ( player )
     irc.register_callback("channel_msg", function ( channel, from, message )
         minetest.chat_send_all(from.."[IRC:"..channel.."]: "..message);
     end);
-    
+
     irc.register_callback("private_msg", function ( from, message )
     end);
-    
+
+    irc.register_callback("action", function ( from, message )
+    end);
+
     irc.register_callback("nick_change", function ( from, old_nick )
     end);
 
@@ -101,6 +104,8 @@ minetest.register_on_leaveplayer(function ( player )
 end);
 
 minetest.register_on_chat_message(function ( name, message )
+    print("***DEBUG: CHAT: "..name.."|"..message);
+    irc.say(CHANNEL, "*** "..player:get_player_name().." joined the game");
     if (not mt_irc.buffered_messages) then
         mt_irc.buffered_messages = { };
     end
@@ -113,6 +118,6 @@ end);
 irc.connect({
     network = SERVER;
     nick = SERVER_NICK;
-    pass = "1234";
+    pass = "";
     timeout = 1.0;
 });
