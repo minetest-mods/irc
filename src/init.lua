@@ -76,7 +76,6 @@ end);
 
 minetest.register_on_joinplayer(function ( player )
 
-    print("PLAYER JOINED: "..player:get_player_name());
     minetest.chat_send_all("PLAYER JOINED: "..player:get_player_name());
 
     irc.register_callback("connect", function ( )
@@ -104,7 +103,6 @@ end);
 
 minetest.register_on_chat_message(function ( name, message )
     print("***DEBUG: CHAT: "..name.."|"..message);
-    irc.say(CHANNEL, "*** "..player:get_player_name().." joined the game");
     if (not mt_irc.buffered_messages) then
         mt_irc.buffered_messages = { };
     end
