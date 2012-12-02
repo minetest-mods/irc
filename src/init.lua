@@ -114,6 +114,16 @@ minetest.register_on_chat_message(function ( name, message )
     };
 end);
 
+minetest.register_chatcommand("me", {
+	params = "<action>";
+	description = "chat action (eg. /me orders a pizza)";
+	privs = {shout=true};
+	func = function(name, param)
+		minetest.chat_send_all("* "..name.." "..param);
+		irc.say(CHANNEL, "* "..name.." "..param);
+	end;
+})
+
 irc.connect({
     network = SERVER;
     nick = SERVER_NICK;

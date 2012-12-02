@@ -13,10 +13,46 @@ Note: This mod is currently a work-in-progress, and is only tested under
        platforms are welcome.
 
 
+COMPILING
+---------
+Make sure you have CMake (http://cmake.org/), and of course, a C compiler,
+ on your system before proceeding.
+
+Under Windows: (note: untested)
+  - Open a command prompt and CD to the minetest-irc directory.
+  - Create a directory named "Build", and CD into it:
+      md Build
+      cd Build
+  - Run CMake to generate the build system (see your CMake docs for more
+     information about command line options).
+      cmake ..
+  - Use the build tool for the generated build system to compile the
+     native library. For example, if using Microsoft Visual Studio, open
+     the generated workspace and build from there. If using make, just run
+     "make" from within the Build directory.
+  - Use the packmod.bat batch file to copy the files into a ready to use
+     mod directory named `irc'.
+
+Under Linux:
+  - From a terminal, CD to the minetest-irc directory.
+  - Create a directory named "Build", and CD into it:
+      mkdir Build
+      cd Build
+  - Run CMake to generate the build system (see your CMake docs for more
+     information about command line options).
+      cmake ..
+  - Use the build tool for the generated build system to compile the
+     native library. For example, if using Code::Blocks, open the generated
+     workspace and build from there. If using make, just run "make" from
+     within the Build directory.
+  - Use the packmod.sh shell script to copy the files into a ready to use
+     mod directory named `irc'.
+
+
 INSTALLING
 ----------
-Unpack the archive and put the `irc' directory in any of the directories
- where Minetest looks for mods. For more information, see:
+Just put theit in any of the
+ directories where Minetest looks for mods. For more information, see:
     http://wiki.minetest.net/wiki/Installing_mods
 
 
