@@ -11,7 +11,7 @@ do_make() # [PLATFORM]
     BLD_SFX='';
 
     if [ "$1" ]; then
-        TC_FILE="-DCMAKE_TOOLCHAIN_FILE=x-$1.cmake";
+        TC_FILE="-DCMAKE_TOOLCHAIN_FILE=cmake/x-$1.cmake";
         BLD_SFX="-$1";
     fi
 

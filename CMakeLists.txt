@@ -9,10 +9,6 @@ set(MINETEST_IRC_VERSION 0.1.0)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-if(CMAKE_TOOLCHAIN_FILE)
-    include(${CMAKE_TOOLCHAIN_FILE})
-endif()
-
 set(LUA_SRCS
     src/lua/lapi.c
     src/lua/lcode.c
