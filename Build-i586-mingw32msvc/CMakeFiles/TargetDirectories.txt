@@ -1,5 +1,0 @@
-/home/diego/src/minetest-irc/Build-i586-mingw32msvc/CMakeFiles/copy_files_luairc.dir
-/home/diego/src/minetest-irc/Build-i586-mingw32msvc/CMakeFiles/copy_files_luasocket.dir
-/home/diego/src/minetest-irc/Build-i586-mingw32msvc/CMakeFiles/copy_files_mt_irc.dir
-/home/diego/src/minetest-irc/Build-i586-mingw32msvc/CMakeFiles/luasocket_lib.dir
-/home/diego/src/minetest-irc/Build-i586-mingw32msvc/CMakeFiles/pack_mod.dir
