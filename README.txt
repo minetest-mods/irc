@@ -61,13 +61,13 @@ SETTINGS
 All settings are changed directly in the script. If any of these settings
  are either nil or false, the default value is used.
 
-    SERVER (string, default "irc.freenode.net")
+    mt_irc.server (string, default "irc.freenode.net")
         This is the IRC server the mod connects to.
 
-    CHANNEL (string, default "#minetest-irc-testing")
+    mt_irc.channel (string, default "#minetest-irc-testing")
         The IRC channel to join.
 
-    DTIME (number, default 0.2)
+    mt_irc.dtime (number, default 0.2)
         This is the time in seconds between updates in the connection.
         In order not to block the game, the mod must periodically "poll"
         the connection to both send messages to, and receive messages
@@ -76,6 +76,52 @@ All settings are changed directly in the script. If any of these settings
         the mod "polls" the connection more often, but can make the
         game hang. It allows fractional values.
 
+    mt_irc.timeout (number, default 60.0)
+        Underlying socket timeout in seconds. This is the time before
+        the system drops an idle connection.
+
+    mt_irc.server_nick (string, default "minetest-"..<server-id>)
+        Nickname used as "proxy" for the in-game chat. 
+        "<server-id>" is the server IP address packed as a 32 bit integer.
+        (Currently, it's just a random 32 bit number).
+
+    mt_irc.password (string, default "")
+        Password to use when connecting to the server.
+
+    mt_irc.message_format_out (string, default "<$(name)> $(message)")
+        This specifies how to send the messages from in-game to IRC.
+        The strings can contain "macros" (or variable substitutions), which
+        are specified as "$(macro_name)".
+        Currently, these macros are supported:
+          $(name)       The name of the player sending the message.
+          $(message)    The actual message text.
+        Any unrecognized macro will be left in the message verbatim.
+        For example, if a user named "mtuser" is saying "Hello!", then:
+          "<$(name)> $(message)"
+        ...will yield...
+          "<mtuser> Hello!"
+        ...and...
+          "$(name): $(message) $(xyz)"
+        ...will yield...
+          "mtuser: Hello! $(xyz)"
+
+    mt_irc.message_format_in (string,
+     default "<$(name)@IRC> $(message)")
+        This specifies how the messages gotten from the IRC channel are
+        displayed in-game.
+        The strings can contain "macros" (or variable substitutions), which
+        are specified as "$(macro_name)".
+        Currently, these macros are supported:
+          $(name)       The nickname of the user sending the message.
+          $(message)    The actual message text.
+          $(server)     The IRC server.
+          $(port)       The IRC server port.
+          $(channel)    The IRC channel.
+        In the default configuration, this will yield:
+          <mtuser@IRC[#minetest-irc-testing]> Hello!
+
+-- Enable debug output (boolean, default false)
+mt_irc.debug = true;
 
 LICENSE
 -------

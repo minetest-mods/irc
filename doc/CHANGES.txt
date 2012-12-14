@@ -1,0 +1,15 @@
+
+Version 0.1.1:
+    - Moved all user configuration to `config.lua'.
+    - Added formatted messages for sent and received messages and options
+       to change them.
+    - Added options to change port, password.
+    - Added support for sending/receiving private messages.
+    - Removed need for separate packmod.{sh|bat} scripts. Now everything
+       is (almost) nicely handled by CMake.
+    - Now all sources (including Lua itself) are added to a single
+       luasocket lib. This will hopefully fix some cases where the linker
+       b0rk3d with undefined references under Linux.
+
+Version 0.1.0:
+    - At least it's working :)
