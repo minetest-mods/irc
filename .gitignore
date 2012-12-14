@@ -1,3 +1,6 @@
-Build
+Build*
 irc-*
 irc
+*.zip
+*.tar.gz
+*.tar.bz2
