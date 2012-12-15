@@ -128,9 +128,37 @@ All settings are changed in the `config.lua' file. If any of these settings
 -- Enable debug output (boolean, default false)
 mt_irc.debug = true;
 
+USAGE
+-----
+
+Once the game is connected to the IRC channel, chatting using the 'T' or
+ F10 hotkeys will send the messages to the channel, and will be visible
+ by anyone. Also, when someone sends a message to the channel, that text
+ will be visible in-game.
+
+This mod also adds one chat command:
+
+    /msg nick message
+        Sends a private message to the IRC user whose nickname is `nick'.
+
+You can also send private messages from IRC to in-game players, though
+ it's a bit tricky.
+
+To do it, you must send a private message to the "proxy" user (set with
+ the `mt_irc.server_nick' option above), in the following format:
+    >playername message
+For example, if there's a player named `mtuser', you can send him/her
+ a private message with:
+    >mtuser Hello!
+
+To avoid possible misunderstandings (since all in-game players use the
+ same IRC user to converse with you), the "proxy" user will reject any
+ private messages that are not in that format, and will send back a
+ nice reminder as a private message.
+
 LICENSE
 -------
-This license applies only to my code (in init.lua).
+This license applies only to the `init.lua' and `config.lua' files.
 
             DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE 
                     Version 2, December 2004 
@@ -151,6 +179,6 @@ The files `http.lua', `ltn12.lua', `mime.lua', `smtp.lua', `socket.lua',
  (http://luasocket.luaforge.org/). See `LICENSE-luasocket.txt' for
  licensing information.
 
-The `irc.lua' file and the entire content of the `irc' directory are part
+The `irc.lua' file and the entire contents of the `irc' directory are part
  of the LuaIRC project (http://luairc.luaforge.org/). See
  `LICENSE-LuaIRC.txt' for licensing information.
