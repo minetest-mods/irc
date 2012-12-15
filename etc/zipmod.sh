@@ -2,6 +2,11 @@
 
 # ONLY FOR MAINTAINER USE!!
 
+t="`pwd`";
+cd "`dirname "$0"`/..";
+basedir="`pwd`";
+cd "$t";
+
 ver=0.1.0;
 
 do_make() # [PLATFORM]
@@ -15,6 +20,7 @@ do_make() # [PLATFORM]
         BLD_SFX="-$1";
     fi
 
+    cd "$basedir";
     mkdir -p Build$BLD_SFX;
     cd Build$BLD_SFX;
     cmake $TC_FILE .. || exit;
@@ -24,16 +30,16 @@ do_make() # [PLATFORM]
 
 }
 
-cd "`dirname "$0"`/..";
-
-rm -fr irc;
+mkdir -p "$basedir/dists"
 
 # Native Version
-do_make;
-tar cfz Kaeza-irc-$ver-`uname -s`-`uname -p`.tar.gz irc || exit;
-rm -fr irc;
+(do_make \
+    && cd Build \
+    && tar cfz "$basedir/dists/Kaeza-irc-$ver-`uname -s`-`uname -p`.tar.gz" irc \
+) || exit;
 
 # Linux -> MinGW32 Crosscompiler
-do_make i586-mingw32msvc;
-zip -r Kaeza-irc-$ver-Win32.zip irc || exit;
-rm -fr irc;
+(do_make i586-mingw32msvc \
+    && cd Build-i586-mingw32msvc \
+    && zip -r "$basedir/dists/Kaeza-irc-$ver-Win32.zip" irc \
+) || exit;

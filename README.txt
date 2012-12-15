@@ -43,22 +43,27 @@ Under Linux:
       cmake ..
   - Use the build tool for the generated build system to compile the
      native library. For example, if using Code::Blocks, open the generated
-     workspace and build from there. If using make, just run "make" from
+     workspace and build from there. If using `make', just run "make" from
      within the Build directory.
-  - Use the packmod.sh shell script to copy the files into a ready to use
-     mod directory named `irc'.
-
+  - Again use the build tool to invoke the `pack_mod' target. For example,
+     if using `make', run "make pack_mod" from within the build directory.
+     This will create an `irc-mod/irc' directory inside the build directory.
+     This `irc' directory will be ready to be deployed to your Minetest mods
+     directory. [Currently, there's a problem when compiling for GCC/MinGW32:
+     the library will be named `libluasocket.dll', but the mod looks for
+     `luasocket.dll'. There is a temporary fix to make the mod also search
+     for `libluasocket.dll'.]
 
 INSTALLING
 ----------
-Just put theit in any of the
- directories where Minetest looks for mods. For more information, see:
+Just put the created `irc' directory in any of the directories where
+ Minetest looks for mods. For more information, see:
     http://wiki.minetest.net/wiki/Installing_mods
 
 
 SETTINGS
 --------
-All settings are changed directly in the script. If any of these settings
+All settings are changed in the `config.lua' file. If any of these settings
  are either nil or false, the default value is used.
 
     mt_irc.server (string, default "irc.freenode.net")

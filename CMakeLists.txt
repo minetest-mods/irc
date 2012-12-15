@@ -74,24 +74,33 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/lua)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/luasocket)
 
 add_library(luasocket_lib MODULE ${LUASOCKET_SRCS} ${LUA_SRCS})
-set_target_properties(luasocket_lib
-    PROPERTIES
-    OUTPUT_NAME luasocket
-    #COMPILE_FLAGS "-Wall -Werror"
-)
+
+set_target_properties(luasocket_lib PROPERTIES
+    OUTPUT_NAME luasocket)
+
 if(WIN32)
-    find_library(ws2_32_lib
-        NAMES ws2_32
-    )
-    target_link_libraries(luasocket_lib
-        ${ws2_32_lib}
-    )
+    # When using MinGW32, CMake prefixes DLLs with "lib". Force remove
+    #  this prefix regardless of compiler.
+    set_target_properties(luasocket_lib PROPERTIES
+        PREFIX "")
+    if (NOT MSVC) # GCC?
+        # The `-fPIC' flag generates a warning on MinGW32, which combined
+        #  with `-Werror' makes that an error though `-fPIC' is ignored.
+        #  We use `-fno-PIC' to avoid that.
+        set_target_properties(luasocket_lib PROPERTIES
+            COMPILE_FLAGS "-fno-PIC -Wall -Werror")
+    endif()
+    find_library(ws2_32_lib NAMES ws2_32)
+    target_link_libraries(luasocket_lib ${ws2_32_lib})
+else() # Possibly Unix
+    set_target_properties(luasocket_lib PROPERTIES
+        COMPILE_FLAGS "-Wall -Werror")
 endif()
 
-set(dir ${CMAKE_CURRENT_SOURCE_DIR}/irc/)
+set(dir ${CMAKE_CURRENT_BINARY_DIR}/irc/)
 
 if(WIN32)
-    set(lib "${CMAKE_CURRENT_BINARY_DIR}/libluasocket.dll")
+    set(lib "${CMAKE_CURRENT_BINARY_DIR}/luasocket.dll")
 else()
     set(lib "${CMAKE_CURRENT_BINARY_DIR}/libluasocket.so")
 endif()

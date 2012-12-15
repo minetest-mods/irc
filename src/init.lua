@@ -69,10 +69,6 @@ minetest.register_globalstep(function ( dtime )
     end
 end);
 
-local function strltrim ( s )
-    return s:gsub("^[[:space:]]*", "");
-end
-
 minetest.register_on_joinplayer(function ( player )
 
     if (not mt_irc.connect_ok) then 
@@ -146,14 +142,14 @@ minetest.register_chatcommand("msg", {
     func = function ( name, param )
         local pos = param:find(" ", 1, true);
         if (not pos) then return; end
-        local nick = param:sub(1, pos - 1);
+        local name = param:sub(1, pos - 1);
         local msg = param:sub(pos + 1);
         local t = {
             name=nick;
             message=msg;
         };
         local text = mt_irc.message_format_out:gsub("%$%(([^)]+)%)", t)
-        irc.send("PRIVMSG", nick, text);
+        irc.send("PRIVMSG", name, text);
     end;
 });
 
