@@ -111,9 +111,12 @@ All settings are changed in the `config.lua' file. If any of these settings
         In the default configuration, this will yield:
           <mtuser@IRC[#minetest-irc-testing]> Hello!
 
--- Enable debug output (boolean, default false)
-mt_irc.debug = true;
+    mt_irc.debug (boolean, default false)
+        Whether to output debug information.
 
+    mt_irc.connect_on_join (boolean, default false)
+        If true, players are connected by default. If false, players
+         have to use the /irc_connect command to connect to the server.
 
 USAGE
 -----
@@ -122,10 +125,16 @@ Once the game is connected to the IRC channel, chatting using the 'T' or
  by anyone. Also, when someone sends a message to the channel, that text
  will be visible in-game.
 
-This mod also adds one chat command:
+This mod also adds a few chat commands:
 
-    /msg nick message
+    /msg <nick> <message>
         Sends a private message to the IRC user whose nickname is `nick'.
+
+    /join
+        Join the IRC channel.
+
+    /part
+        Part the IRC channel.
 
 You can also send private messages from IRC to in-game players, though
  it's a bit tricky.
@@ -135,7 +144,7 @@ To do it, you must send a private message to the "proxy" user (set with
     >playername message
 For example, if there's a player named `mtuser', you can send him/her
  a private message with:
-    >mtuser Hello!
+    /msg server_nick >mtuser Hello!
 
 To avoid possible misunderstandings (since all in-game players use the
  same IRC user to converse with you), the "proxy" user will reject any

@@ -10,6 +10,13 @@ Version 0.1.1:
     - Now all sources (including Lua itself) are added to a single
        luasocket lib. This will hopefully fix some cases where the linker
        b0rk3d with undefined references under Linux.
+    - Added option to enable/disable connecting when starting the game, and
+       the /irc_connect chat command to connect manually to the server (as
+       suggested by OldCoder). The /irc_connect chat command requires the
+       `irc_admin' privilege.
+    - Added option to enable/disable joining the channel when a player joins,
+       and the /join and /part chat commands to join and part the channel
+       manually if desired (as suggested by OldCoder).
 
 Version 0.1.0:
     - At least it's working :)

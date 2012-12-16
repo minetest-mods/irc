@@ -4,8 +4,7 @@
 -- *************************
 
 -- Server to connect on joinplayer (string, default "irc.freenode.net")
---mt_irc.server = nil;
-mt_irc.server = "localhost";
+mt_irc.server = nil;
 
 -- Port to connect on joinplayer (number, default 6667)
 mt_irc.port = nil;
@@ -40,3 +39,11 @@ mt_irc.message_format_in = "<$(name)@IRC> $(message)";
 
 -- Enable debug output (boolean, default false)
 mt_irc.debug = true;
+
+-- Whether to automatically join the channed when player joins
+--  (boolean, default false) 
+mt_irc.connect_on_join = false;
+
+-- Whether to automatically connect to the server on mod load
+--  (boolean, default false) 
+mt_irc.connect_on_load = false;
