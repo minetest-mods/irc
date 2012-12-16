@@ -8,51 +8,37 @@ This mod is just a glue between luasocket, LuaIRC, and Minetest. It
  provides a two-way communication between the in-game chat, and an
  arbitrary IRC channel. 
 
-Note: This mod is currently a work-in-progress, and is only tested under
-       Ubuntu 12.04 with Minetest 0.4.3 and 0.4.4-dev. Testers for other
-       platforms are welcome.
-
-
+ 
 COMPILING
 ---------
 Make sure you have CMake (http://cmake.org/), and of course, a C compiler,
  on your system before proceeding.
+For Windows, try MinGW32 (http://mingw.org/).
+For Unix-based systems, you should not have any problems with the C compiler
+ since there's one (almost) always available. Puppy Linux users of course
+ need a separate `devx.sfs' (from the same place where you got the Puppy
+ ISO), since vanilla Puppy does not come with `gcc'. See your Puppy docs for
+ more info about how to install additional SFS files.
 
-Under Windows: (note: untested)
-  - Open a command prompt and CD to the minetest-irc directory.
+To compile and "pack" the mod:
+
+  - Open a command prompt/terminal and CD to the minetest-irc directory.
   - Create a directory named "Build", and CD into it:
-      md Build
+      mkdir Build
       cd Build
   - Run CMake to generate the build system (see your CMake docs for more
-     information about command line options).
+     information about command line options, in particular the `-G' option).
       cmake ..
   - Use the build tool for the generated build system to compile the
      native library. For example, if using Microsoft Visual Studio, open
      the generated workspace and build from there. If using make, just run
      "make" from within the Build directory.
-  - Use the packmod.bat batch file to copy the files into a ready to use
-     mod directory named `irc'.
-
-Under Linux:
-  - From a terminal, CD to the minetest-irc directory.
-  - Create a directory named "Build", and CD into it:
-      mkdir Build
-      cd Build
-  - Run CMake to generate the build system (see your CMake docs for more
-     information about command line options).
-      cmake ..
-  - Use the build tool for the generated build system to compile the
-     native library. For example, if using Code::Blocks, open the generated
-     workspace and build from there. If using `make', just run "make" from
-     within the Build directory.
   - Again use the build tool to invoke the `pack_mod' target. For example,
      if using `make', run "make pack_mod" from within the build directory.
-     This will create an `irc-mod/irc' directory inside the build directory.
+     This will create an `irc' directory inside the build directory.
      This `irc' directory will be ready to be deployed to your Minetest mods
-     directory. [Currently, there's a problem when compiling for GCC/MinGW32:
-     the library will be named `libluasocket.dll', but the mod looks for
-     `luasocket.dll'. There is a temporary fix to make the mod also search
-     for `libluasocket.dll'.]
+     directory.
+
 
 INSTALLING
 ----------
@@ -128,9 +114,9 @@ All settings are changed in the `config.lua' file. If any of these settings
 -- Enable debug output (boolean, default false)
 mt_irc.debug = true;
 
+
 USAGE
 -----
-
 Once the game is connected to the IRC channel, chatting using the 'T' or
  F10 hotkeys will send the messages to the channel, and will be visible
  by anyone. Also, when someone sends a message to the channel, that text
@@ -155,6 +141,15 @@ To avoid possible misunderstandings (since all in-game players use the
  same IRC user to converse with you), the "proxy" user will reject any
  private messages that are not in that format, and will send back a
  nice reminder as a private message.
+
+
+THANKS
+------
+I'd like to thank the users who supported this mod both on the Minetest
+ Forums and on the #minetest channel. In no particular order:
+
+    leo_rockway, VanessaE, OldCoder, sfan5, RealBadAngel, Muadtralk/sdzen,
+     Josh, celeron55, KikaRz, and many others I forgot about (sorry!).
 
 LICENSE
 -------
