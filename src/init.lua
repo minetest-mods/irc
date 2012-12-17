@@ -82,7 +82,6 @@ end);
 minetest.register_on_joinplayer(function ( player )
 
     irc.register_callback("connect", function ( )
-        if (not mt_irc.connect_ok) then return; end
         irc.join(mt_irc.channel);
         irc.say(mt_irc.channel, "*** "..player:get_player_name().." joined the game");
     end);
