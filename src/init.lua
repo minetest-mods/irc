@@ -1,4 +1,3 @@
-
 -- IRC Mod for Minetest
 -- (C) 2012 Diego Martínez <kaeza@users.sf.net>
 --
@@ -73,9 +72,11 @@ minetest.register_globalstep(function ( dtime )
         irc.poll();
         mt_irc.cur_time = mt_irc.cur_time - mt_irc.dtime;
         local plys = minetest.get_connected_players();
-        if (#plys <= 0) then -- Just in case :)
-            irc.quit("Closing.");
-        end
+--Source of flooding in these lines
+--However, bot will not connect to a channel but can PM across minetest and IRC to users ust fine.
+-- if (#plys <= 0) then -- Just in case :)
+--            irc.quit("Closing.");
+--        end
     end
 end);
 
