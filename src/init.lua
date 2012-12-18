@@ -214,6 +214,9 @@ minetest.register_chatcommand("join", {
             return;
         end
         mt_irc.connected_players[name] = true;
+-- Best way I could get bot to autojoin channel was to add the irc.join function here.
+-- Bot won't connect until the first user joins.  The bot will not disconect if last player leaves.
+        irc.join(mt_irc.channel);
         minetest.chat_send_player(name, "IRC: You are now in the channel.");
     end;
 });
