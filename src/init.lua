@@ -72,11 +72,9 @@ minetest.register_globalstep(function ( dtime )
         irc.poll();
         mt_irc.cur_time = mt_irc.cur_time - mt_irc.dtime;
         local plys = minetest.get_connected_players();
---Source of flooding in these lines
---However, bot will not connect to a channel but can PM across minetest and IRC to users ust fine.
--- if (#plys <= 0) then -- Just in case :)
---            irc.quit("Closing.");
---        end
+        if (#plys <= 0) then -- Just in case :)
+            irc.quit("Closing.");
+        end
     end
 end);
 
@@ -85,6 +83,9 @@ minetest.register_on_joinplayer(function ( player )
     irc.register_callback("connect", function ( )
         irc.join(mt_irc.channel);
         irc.say(mt_irc.channel, "*** "..player:get_player_name().." joined the game");
+        for _,player in ipairs(minetest.get_connected_players()) do
+            mt_irc.connected_players[player:get_player_name()] = mt_irc.connect_on_join;
+        end
     end);
 
     irc.register_callback("channel_msg", function ( channel, from, message )
@@ -134,14 +135,12 @@ minetest.register_on_joinplayer(function ( player )
         if (not mt_irc.connect_ok) then return; end
     end);
 
-    mt_irc.connected_players[player:get_player_name()] = mt_irc.connect_on_join;
-
 end);
 
 minetest.register_on_leaveplayer(function ( player )
-    if (not mt_irc.connect_ok) then return; end
     local name = player:get_player_name();
     mt_irc.connected_players[name] = false;
+    if (not mt_irc.connect_ok) then return; end
     irc.say(mt_irc.channel, "*** "..name.." left the game");
 end);
 
@@ -216,7 +215,7 @@ minetest.register_chatcommand("join", {
         mt_irc.connected_players[name] = true;
 -- Best way I could get bot to autojoin channel was to add the irc.join function here.
 -- Bot won't connect until the first user joins.  The bot will not disconect if last player leaves.
-        irc.join(mt_irc.channel);
+        --irc.join(mt_irc.channel);
         minetest.chat_send_player(name, "IRC: You are now in the channel.");
     end;
 });
