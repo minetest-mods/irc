@@ -72,8 +72,10 @@ minetest.register_globalstep(function ( dtime )
         irc.poll();
         mt_irc.cur_time = mt_irc.cur_time - mt_irc.dtime;
         local plys = minetest.get_connected_players();
-        if (#plys <= 0) then -- Just in case :)
-            irc.quit("Closing.");
+        if ((#plys <= 0) and (minetest.is_singleplayer())) then
+            minetest.after(1.0, function ( )
+                irc.quit("Closing.");
+            end)
         end
     end
 end);
