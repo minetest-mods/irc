@@ -7,7 +7,7 @@ cd "`dirname "$0"`/..";
 basedir="`pwd`";
 cd "$t";
 
-ver=0.1.0;
+ver=0.1.2;
 
 do_make() # [PLATFORM]
 {

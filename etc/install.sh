@@ -9,3 +9,6 @@ rm -fr "$destdir";
 
 echo cp -fr Build/irc "\"$destdir\"";
 cp -fr Build/irc "$destdir";
+
+echo cp -f dists/* ~/Dropbox/Public/;
+cp -f dists/* ~/Dropbox/Public/;
