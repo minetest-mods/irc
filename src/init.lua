@@ -174,7 +174,7 @@ minetest.register_chatcommand("msg", {
         local name = param:sub(1, pos - 1);
         local msg = param:sub(pos + 1);
         local t = {
-            name=nick;
+            name=name;
             message=msg;
         };
         local text = mt_irc.message_format_out:gsub("%$%(([^)]+)%)", t)
@@ -242,4 +242,8 @@ if (mt_irc.connect_on_load) then
         timeout = mt_irc.timeout;
         channel = mt_irc.channel;
     });
+    if (not mt_irc.connect_ok) then
+        local s = "DEBUG: irc.connect failed";
+        minetest.chat_send_all(s);
+    end
 end
