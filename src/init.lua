@@ -71,20 +71,26 @@ minetest.register_globalstep(function ( dtime )
         end
         irc.poll();
         mt_irc.cur_time = mt_irc.cur_time - mt_irc.dtime;
-        local plys = minetest.get_connected_players();
---Source of flooding in these lines
---However, bot will not connect to a channel but can PM across minetest and IRC to users ust fine.
--- if (#plys <= 0) then -- Just in case :)
---            irc.quit("Closing.");
---        end
+        --local plys = minetest.get_connected_players();
+        --if ((#plys <= 0) and (minetest.is_singleplayer())) then
+        --    minetest.after(1.0, function ( )
+        --        irc.quit("Closing.");
+        --    end)
+        --end
     end
 end);
+
+local function do_connect ( )
+end
 
 minetest.register_on_joinplayer(function ( player )
 
     irc.register_callback("connect", function ( )
         irc.join(mt_irc.channel);
         irc.say(mt_irc.channel, "*** "..player:get_player_name().." joined the game");
+        for _,player in ipairs(minetest.get_connected_players()) do
+            mt_irc.connected_players[player:get_player_name()] = mt_irc.connect_on_join;
+        end
     end);
 
     irc.register_callback("channel_msg", function ( channel, from, message )
@@ -134,14 +140,12 @@ minetest.register_on_joinplayer(function ( player )
         if (not mt_irc.connect_ok) then return; end
     end);
 
-    mt_irc.connected_players[player:get_player_name()] = mt_irc.connect_on_join;
-
 end);
 
 minetest.register_on_leaveplayer(function ( player )
-    if (not mt_irc.connect_ok) then return; end
     local name = player:get_player_name();
     mt_irc.connected_players[name] = false;
+    if (not mt_irc.connect_ok) then return; end
     irc.say(mt_irc.channel, "*** "..name.." left the game");
 end);
 
@@ -174,7 +178,7 @@ minetest.register_chatcommand("msg", {
         local name = param:sub(1, pos - 1);
         local msg = param:sub(pos + 1);
         local t = {
-            name=nick;
+            name=name;
             message=msg;
         };
         local text = mt_irc.message_format_out:gsub("%$%(([^)]+)%)", t)
@@ -214,6 +218,9 @@ minetest.register_chatcommand("join", {
             return;
         end
         mt_irc.connected_players[name] = true;
+-- Best way I could get bot to autojoin channel was to add the irc.join function here.
+-- Bot won't connect until the first user joins.  The bot will not disconect if last player leaves.
+        irc.join(mt_irc.channel);
         minetest.chat_send_player(name, "IRC: You are now in the channel.");
     end;
 });
@@ -242,4 +249,8 @@ if (mt_irc.connect_on_load) then
         timeout = mt_irc.timeout;
         channel = mt_irc.channel;
     });
+    if (not mt_irc.connect_ok) then
+        local s = "DEBUG: irc.connect failed";
+        minetest.chat_send_all(s);
+    end
 end
