@@ -1,0 +1,13 @@
+This was successfully tested on the following systems and found to compile, install and work properly in minetest.
+
+ArchLinx
+--------
+
+GCC 4.7.2
+CMAKE 2.8.10.1
+
+
+Ubuntu 12.10
+------
+GCC 4.7.2-2ubuntu1
+CMAKE 2.8.9
