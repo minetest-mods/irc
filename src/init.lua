@@ -41,7 +41,7 @@ if (not mt_irc.server_nick) then
 end
 mt_irc.server = (mt_irc.server or "irc.freenode.net");
 mt_irc.port = (mt_irc.port or 6667);
-mt_irc.channel = (mt_irc.channel or "#mtgamechatforservers");
+mt_irc.channel = (mt_irc.channel or "#minetest-irc-testing");
 mt_irc.dtime = (mt_irc.dtime or 0.2);
 mt_irc.timeout = (mt_irc.timeout or 60.0);
 mt_irc.message_format_out = (mt_irc.message_format_out or "<$(nick)> $(message)");
