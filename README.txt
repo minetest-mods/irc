@@ -1,4 +1,3 @@
-
 IRC Mod for Minetest
 (C) 2012 Diego Martínez <kaeza@users.sf.net>
 
@@ -19,6 +18,11 @@ For Unix-based systems, you should not have any problems with the C compiler
  need a separate `devx.sfs' (from the same place where you got the Puppy
  ISO), since vanilla Puppy does not come with `gcc'. See your Puppy docs for
  more info about how to install additional SFS files.
+
+Quick one line build for linux.  
+
+git clone https://github.com/kaeza/minetest-irc.git && cd minetest-irc && mkdir build && cd build && cmake .. && make && make pack_mod && cp -R irc <your mod directory>
+Plese change the "cp -R irc" to fit your install of minetest.
 
 To compile and "pack" the mod:
 
