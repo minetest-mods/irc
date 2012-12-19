@@ -1,4 +1,3 @@
-
 -- *************************
 -- ** BASIC USER SETTINGS **
 -- *************************
@@ -41,7 +40,9 @@ mt_irc.message_format_in = "<$(name)@IRC> $(message)";
 mt_irc.debug = true;
 
 -- Whether to automatically join the channed when player joins
---  (boolean, default false) 
+--  (boolean, default false)
+-- For now leave this false if using autoconnect.  Bot will join channel when first user
+-- types the /join command in game.
 mt_irc.connect_on_join = false;
 
 -- Whether to automatically connect to the server on mod load
