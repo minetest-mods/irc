@@ -66,7 +66,7 @@ minetest.register_chatcommand("me", {
 	description = "chat action (eg. /me orders a pizza)";
 	privs = { shout=true };
 	func = function(name, param)
-		minetest.chat_send_all("* "..name.." "..param);
-		mt_irc.send({from=name; action=param;});
+        minetest.chat_send_all("* "..name.." "..param);
+        irc.say(mt_irc.channel, "* "..name.." "..param);
 	end,
 })
