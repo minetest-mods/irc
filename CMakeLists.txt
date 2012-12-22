@@ -133,10 +133,14 @@ add_custom_target(copy_files_mt_irc
     COMMAND ${CMAKE_COMMAND} -E make_directory ${dir}
     COMMAND ${CMAKE_COMMAND} -E copy src/init.lua ${dir}
     COMMAND ${CMAKE_COMMAND} -E copy src/config.lua ${dir}
+    COMMAND ${CMAKE_COMMAND} -E copy src/callback.lua ${dir}
+    COMMAND ${CMAKE_COMMAND} -E copy src/friends.lua ${dir}
+    COMMAND ${CMAKE_COMMAND} -E copy src/chatcmds.lua ${dir}
     COMMAND ${CMAKE_COMMAND} -E copy README.txt ${dir}
     COMMAND ${CMAKE_COMMAND} -E copy doc/LICENSE.txt ${dir}
     COMMAND ${CMAKE_COMMAND} -E copy doc/CHANGES.txt ${dir}
     COMMAND ${CMAKE_COMMAND} -E copy doc/TODO.txt ${dir}
+    COMMAND ${CMAKE_COMMAND} -E copy doc/TESTED_ON.txt ${dir}
 )
 
 add_custom_target(pack_mod

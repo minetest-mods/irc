@@ -8,5 +8,5 @@ cd ..;
 
 "$dir/zipmod.sh";
 
-echo cp -f dists/* ~/Dropbox/Public/;
-cp -f dists/* ~/Dropbox/Public/;
+echo cp -f dists/* ~/Dropbox/Public/minetest/mods/;
+cp -f dists/* ~/Dropbox/Public/minetest/mods/;
