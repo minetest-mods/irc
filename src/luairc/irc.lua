@@ -134,6 +134,7 @@ end
 
 -- on_join {{{
 function handlers.on_join(from, chan)
+    chan = string.lower(chan);
     base.assert(serverinfo.channels[chan],
                 "Received join message for unknown channel: " .. chan)
     if serverinfo.channels[chan].join_complete then
@@ -160,6 +161,7 @@ function handlers.on_mode(from, to, mode_string, ...)
     local dir = mode_string:sub(1, 1)
     mode_string = mode_string:sub(2)
     local args = {...}
+    to = string.lower(to);
 
     if to:sub(1, 1) == "#" then
         -- handle channel mode requests {{{
@@ -210,6 +212,7 @@ end
 
 -- on_topic {{{
 function handlers.on_topic(from, chan, new_topic)
+    chan = string.lower(chan);
     base.assert(serverinfo.channels[chan],
                 "Received topic message for unknown channel: " .. chan)
     serverinfo.channels[chan]._topic.text = new_topic
@@ -223,12 +226,14 @@ end
 
 -- on_invite {{{
 function handlers.on_invite(from, to, chan)
+    chan = string.lower(chan);
     callback("invite", from, chan)
 end
 -- }}}
 
 -- on_kick {{{
 function handlers.on_kick(from, chan, to)
+    chan = string.lower(chan);
     base.assert(serverinfo.channels[chan],
                 "Received kick message for unknown channel: " .. chan)
     if serverinfo.channels[chan].join_complete then
@@ -241,6 +246,7 @@ end
 -- on_privmsg {{{
 function handlers.on_privmsg(from, to, msg)
     local msgs = ctcp._ctcp_split(msg)
+    to = string.lower(to);
     for _, v in base.ipairs(msgs) do
         local msg = v.str
         if v.ctcp then
@@ -275,6 +281,7 @@ end
 -- on_notice {{{
 function handlers.on_notice(from, to, msg)
     local msgs = ctcp._ctcp_split(msg)
+    to = string.lower(to);
     for _, v in base.ipairs(msgs) do
         local msg = v.str
         if v.ctcp then
@@ -303,6 +310,7 @@ end
 
 -- on_quit {{{
 function handlers.on_quit(from, quit_msg)
+    from = string.lower(from);
     for name, chan in base.pairs(serverinfo.channels) do
         chan:_remove_user(from)
     end
@@ -322,6 +330,7 @@ end
 -- on_rpl_topic {{{
 -- catch topic changes
 function handlers.on_rpl_topic(from, chan, topic)
+    chan = string.lower(chan);
     base.assert(serverinfo.channels[chan],
                 "Received topic information about unknown channel: " .. chan)
     serverinfo.channels[chan]._topic.text = topic
@@ -330,6 +339,7 @@ end
 
 -- on_rpl_notopic {{{
 function handlers.on_rpl_notopic(from, chan)
+    chan = string.lower(chan);
     base.assert(serverinfo.channels[chan],
                 "Received topic information about unknown channel: " .. chan)
     serverinfo.channels[chan]._topic.text = ""
@@ -339,6 +349,7 @@ end
 -- on_rpl_topicdate {{{
 -- "topic was set by <user> at <time>"
 function handlers.on_rpl_topicdate(from, chan, user, time)
+    chan = string.lower(chan);
     base.assert(serverinfo.channels[chan],
                 "Received topic information about unknown channel: " .. chan)
     serverinfo.channels[chan]._topic.user = user
@@ -349,6 +360,7 @@ end
 -- on_rpl_namreply {{{
 -- handles a NAMES reply
 function handlers.on_rpl_namreply(from, chanmode, chan, userlist)
+    chan = string.lower(chan);
     base.assert(serverinfo.channels[chan],
                 "Received user information about unknown channel: " .. chan)
     serverinfo.channels[chan]._chanmode = constants.chanmodes[chanmode]
@@ -368,6 +380,7 @@ end
 -- when we get this message, the channel join has completed, so call the
 -- external cb
 function handlers.on_rpl_endofnames(from, chan)
+    chan = string.lower(chan);
     base.assert(serverinfo.channels[chan],
                 "Received user information about unknown channel: " .. chan)
     if not serverinfo.channels[chan].join_complete then
@@ -503,6 +516,7 @@ end
 -- requests {{{
 -- on_action {{{
 function ctcp_handlers.on_action(from, to, message)
+    to = string.lower(to);
     if to:sub(1, 1) == "#" then
         base.assert(serverinfo.channels[to],
                     "Received channel msg from unknown channel: " .. to)
