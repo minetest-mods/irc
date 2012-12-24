@@ -8,7 +8,7 @@ end);
 irc.register_callback("connect", function ( )
     irc.join(mt_irc.channel);
     for _,player in ipairs(minetest.get_connected_players()) do
-        mt_irc.connected_players[player:get_player_name()] = mt_irc.connect_on_join;
+        mt_irc.connected_players[player:get_player_name()] = mt_irc.auto_join;
     end
 end);
 
