@@ -43,8 +43,8 @@ mt_irc.debug = true;
 --  (boolean, default false)
 -- For now leave this false if using autoconnect.  Bot will join channel when first user
 -- types the /join command in game.
-mt_irc.connect_on_join = false;
+mt_irc.auto_join = false;
 
 -- Whether to automatically connect to the server on mod load
 --  (boolean, default false) 
-mt_irc.connect_on_load = false;
+mt_irc.auto_connect = false;
