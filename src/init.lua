@@ -89,7 +89,7 @@ mt_irc.part = function ( name )
     mt_irc.connected_players[name] = false;
     minetest.chat_send_player(name, "IRC: You are now out of the channel.");
     --irc.send(mt_irc.channel, name.." is no longer in the channel.");
-    mt_irc.send(name.." is no longer in the channel.");
+    irc.send(name.." is no longer in the channel.");
 end
 
 mt_irc.join = function ( name )
