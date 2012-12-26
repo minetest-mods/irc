@@ -27,48 +27,6 @@ irc.register_callback("channel_msg", function ( channel, from, message )
     end
 end);
 
-mt_irc.bot_commands = {
-    help = {
-        func = function ( from, args )
-            irc.say(from, "HELP:");
-            irc.say(from, ">username message");
-            irc.say(from, "  Send private message <message> to <username>");
-            irc.say(from, "!who");
-            irc.say(from, "  Return list of players currently in-game");
-            irc.say(from, "!help");
-            irc.say(from, "  Show this help message");
-        end;
-    };
-    who = {
-        func = function ( from, args )
-            local s = "";
-            for k, v in pairs(mt_irc.connected_players) do
-                if (v) then
-                    s = s.." "..k;
-                end
-            end
-            irc.say(from, "Players On Channel:"..s);
-        end;
-    };
-    whereis = {
-        -- !whereis PLAYER
-        func = function ( from, args )
-            if (args == "") then
-                irc.say(from, "Usage: !whereis PLAYER");
-                return;
-            end
-            local list = minetest.env:get_objects_inside_radius({x=0,y=0,z=0}, 100000);
-            for _, obj in ipairs(list) do
-                if (obj:is_player() and (obj:get_player_name() == args)) then
-                    local fmt = "Player %s is at (%.2f,%.2f,%.2f)";
-                    local pos = obj:getpos();
-                    irc.say(from, fmt:format(args, pos.x, pos.y, pos.z));
-                end
-            end
-        end;
-    };
-};
-
 local function bot_command ( from, message )
 
     local pos = message:find(" ", 1, true);
@@ -83,6 +41,7 @@ local function bot_command ( from, message )
 
     if (not mt_irc.bot_commands[cmd]) then
         irc.say(from, "Unknown command `"..cmd.."'. Try `!help'.");
+        return;
     end
 
     mt_irc.bot_commands[cmd].func(from, args);

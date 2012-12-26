@@ -125,6 +125,7 @@ end
 
 dofile(MODPATH.."/callback.lua");
 dofile(MODPATH.."/chatcmds.lua");
+dofile(MODPATH.."/botcmds.lua");
 dofile(MODPATH.."/friends.lua");
 
 if (mt_irc.auto_connect) then

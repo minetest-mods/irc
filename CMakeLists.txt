@@ -136,6 +136,7 @@ add_custom_target(copy_files_mt_irc
     COMMAND ${CMAKE_COMMAND} -E copy src/callback.lua ${dir}
     COMMAND ${CMAKE_COMMAND} -E copy src/friends.lua ${dir}
     COMMAND ${CMAKE_COMMAND} -E copy src/chatcmds.lua ${dir}
+    COMMAND ${CMAKE_COMMAND} -E copy src/botcmds.lua ${dir}
     COMMAND ${CMAKE_COMMAND} -E copy README.txt ${dir}
     COMMAND ${CMAKE_COMMAND} -E copy doc/LICENSE.txt ${dir}
     COMMAND ${CMAKE_COMMAND} -E copy doc/CHANGES.txt ${dir}
