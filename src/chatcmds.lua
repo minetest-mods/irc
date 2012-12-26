@@ -30,14 +30,7 @@ minetest.register_chatcommand("irc_connect", {
             minetest.chat_send_player(name, "IRC: You are already connected.");
             return;
         end
-        mt_irc.connect_ok = pcall(irc.connect, {
-            network = mt_irc.server;
-            port = mt_irc.port;
-            nick = mt_irc.server_nick;
-            pass = mt_irc.password;
-            timeout = mt_irc.timeout;
-            channel = mt_irc.channel;
-        });
+        mt_irc.connect();
         minetest.chat_send_player(name, "IRC: You are now connected.");
         irc.say(mt_irc.channel, name.." joined the channel.");
     end;
