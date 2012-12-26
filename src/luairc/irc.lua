@@ -705,7 +705,9 @@ function connect(args)
     serverinfo.connecting = true
     if OUTFILE then irc_debug.set_output(OUTFILE) end
     if DEBUG then irc_debug.enable() end
-    irc_sock = base.assert(socket.connect(network, port))
+    --irc_sock = base.assert(socket.connect(network, port))
+    irc_sock = socket.connect(network, port);
+    if (not irc_sock) then return false; end
     irc_sock:settimeout(timeout)
     _register_socket(irc_sock, 'r', incoming_message)
     _register_socket(irc_sock, 'w', outgoing_message)
@@ -713,6 +715,7 @@ function connect(args)
     send("NICK", nick)
     send("USER", username, get_ip(), network, realname)
     --begin_main_loop()
+    return true, irc_sock;
 end
 -- }}}
 

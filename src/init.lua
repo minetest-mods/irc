@@ -108,7 +108,7 @@ mt_irc.join = function ( name )
 end
 
 mt_irc.connect = function ( )
-    mt_irc.connect_ok = pcall(irc.connect, {
+    mt_irc.connect_ok = irc.connect({
         network = mt_irc.server;
         port = mt_irc.port;
         nick = mt_irc.server_nick;
