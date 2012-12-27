@@ -63,3 +63,19 @@ minetest.register_chatcommand("me", {
         irc.say(mt_irc.channel, "* "..name.." "..param);
 	end,
 })
+
+minetest.register_chatcommand("who", {
+    -- TODO: This duplicates code from !who
+    params = "";
+    description = "Tell who is currently on the channel";
+    privs = { shout=true; };
+    func = function ( name, param )
+        local s = "";
+        for k, v in pairs(mt_irc.connected_players) do
+            if (v) then
+                s = s.." "..k;
+            end
+        end
+        minetest.chat_send_player(name, "Players On Channel:"..s);
+    end;
+});
