@@ -123,6 +123,16 @@ mt_irc.connect = function ( )
     end
 end
 
+mt_irc.say = function ( to, msg )
+    if (not msg) then
+        msg = to;
+        to = mt_irc.channel;
+    end
+    to = to or mt_irc.channel;
+    msg = msg or "";
+    irc.say(to, msg);
+end
+
 dofile(MODPATH.."/callback.lua");
 dofile(MODPATH.."/chatcmds.lua");
 dofile(MODPATH.."/botcmds.lua");

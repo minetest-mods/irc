@@ -20,6 +20,8 @@ mt_irc.register_bot_command = function ( name, def )
 end
 
 mt_irc.register_bot_command("help", {
+    params = "[<command>]";
+    description = "Get help about a command";
     func = function ( from, args )
         if (args ~= "") then
             mt_irc.bot_help(from, args);
@@ -35,6 +37,8 @@ mt_irc.register_bot_command("help", {
 });
 
 mt_irc.register_bot_command("who", {
+    params = nil;
+    description = "Tell who is playing";
     func = function ( from, args )
         local s = "";
         for k, v in pairs(mt_irc.connected_players) do
@@ -47,6 +51,8 @@ mt_irc.register_bot_command("who", {
 });
 
 mt_irc.register_bot_command("whereis", {
+    params = "<player>";
+    description = "Tell the location of <player>";
     
     func = function ( from, args )
         if (args == "") then

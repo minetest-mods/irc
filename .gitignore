@@ -5,3 +5,5 @@ irc
 *.zip
 *.tar.gz
 *.tar.bz2
+*.marks
+screenshot_*.png
