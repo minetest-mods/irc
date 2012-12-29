@@ -2,6 +2,7 @@
 minetest.register_on_joinplayer(function ( player )
 
     irc.say(mt_irc.channel, "*** "..player:get_player_name().." joined the game");
+    mt_irc.connected_players[player:get_player_name()] = mt_irc.auto_join;
 
 end);
 
