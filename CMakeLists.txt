@@ -105,16 +105,16 @@ else()
     set(lib "${CMAKE_CURRENT_BINARY_DIR}/libluasocket.so")
 endif()
 
-add_custom_target(copy_files_luairc
+add_custom_target(pack_mod
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+
+    # LuaIRC
     COMMAND ${CMAKE_COMMAND} -E make_directory ${dir}
     COMMAND ${CMAKE_COMMAND} -E copy src/luairc/irc.lua ${dir}
     COMMAND ${CMAKE_COMMAND} -E copy_directory src/luairc/irc ${dir}/irc
     COMMAND ${CMAKE_COMMAND} -E copy doc/LICENSE-LuaIRC.txt ${dir}
-)
 
-add_custom_target(copy_files_luasocket
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    # luasocket
     COMMAND ${CMAKE_COMMAND} -E make_directory ${dir}
     COMMAND ${CMAKE_COMMAND} -E copy src/luasocket/ftp.lua ${dir}
     COMMAND ${CMAKE_COMMAND} -E copy src/luasocket/http.lua ${dir}
@@ -126,10 +126,8 @@ add_custom_target(copy_files_luasocket
     COMMAND ${CMAKE_COMMAND} -E copy src/luasocket/url.lua ${dir}
     COMMAND ${CMAKE_COMMAND} -E copy doc/LICENSE-luasocket.txt ${dir}
     COMMAND ${CMAKE_COMMAND} -E copy ${lib} ${dir}
-)
 
-add_custom_target(copy_files_mt_irc
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    # IRC mod
     COMMAND ${CMAKE_COMMAND} -E make_directory ${dir}
     COMMAND ${CMAKE_COMMAND} -E copy src/init.lua ${dir}
     COMMAND ${CMAKE_COMMAND} -E copy src/config.lua ${dir}
@@ -142,8 +140,4 @@ add_custom_target(copy_files_mt_irc
     COMMAND ${CMAKE_COMMAND} -E copy doc/CHANGES.txt ${dir}
     COMMAND ${CMAKE_COMMAND} -E copy doc/TODO.txt ${dir}
     COMMAND ${CMAKE_COMMAND} -E copy doc/TESTED_ON.txt ${dir}
-)
-
-add_custom_target(pack_mod
-    DEPENDS copy_files_luasocket copy_files_luairc copy_files_mt_irc
 )
