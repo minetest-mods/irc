@@ -133,6 +133,8 @@ mt_irc.say = function ( to, msg )
     irc.say(to, msg);
 end
 
+mt_irc._irc = irc;
+
 dofile(MODPATH.."/callback.lua");
 dofile(MODPATH.."/chatcmds.lua");
 dofile(MODPATH.."/botcmds.lua");

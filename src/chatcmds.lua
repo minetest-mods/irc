@@ -36,6 +36,35 @@ minetest.register_chatcommand("irc_connect", {
     end;
 });
 
+minetest.register_chatcommand("irc_disconnect", {
+    params = "";
+    description = "Disconnect from the IRC server";
+    privs = { irc_admin=true; };
+    func = function ( name, param )
+        if (not mt_irc.connect_ok) then
+            minetest.chat_send_player(name, "IRC: You are not connected.");
+            return;
+        end
+        irc.quit("Manual BOT Disconnection");
+        minetest.chat_send_player(name, "IRC: You are now disconnected.");
+        mt_irc.connect_ok = false;
+    end;
+});
+
+minetest.register_chatcommand("irc_reconnect", {
+    params = "";
+    description = "Reconnect to the IRC server";
+    privs = { irc_admin=true; };
+    func = function ( name, param )
+        if (mt_irc.connect_ok) then
+            irc.quit("Reconnecting BOT...");
+            minetest.chat_send_player(name, "IRC: Reconnecting bot...");
+            mt_irc.connect_ok = false;
+        end
+        mt_irc.connect();
+    end;
+});
+
 minetest.register_chatcommand("join", {
     params = "";
     description = "Join the IRC channel";

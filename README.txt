@@ -118,9 +118,16 @@ All settings are changed in the `config.lua' file. If any of these settings
     mt_irc.debug (boolean, default false)
         Whether to output debug information.
 
-    mt_irc.connect_on_join (boolean, default false)
-        If true, players are connected by default. If false, players
-         have to use the /irc_connect command to connect to the server.
+    mt_irc.auto_connect (boolean, default false)
+        If true, the bot is connected by default. If false, a player with
+         `irc_admin' privilege has to use the /irc_connect command to
+         connect to the server.
+
+    mt_irc.auto_connect (boolean, default false)
+        If true, players join the channel automatically upon entering the
+         game. If false, each user must manually use the /join command to
+         join the channel. In any case, the players may use the /part
+         command to opt-out of being in the channel.
 
 USAGE
 -----
