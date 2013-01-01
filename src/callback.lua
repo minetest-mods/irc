@@ -93,8 +93,9 @@ minetest.register_on_leaveplayer(function ( player )
 end);
 
 minetest.register_on_chat_message(function ( name, message )
+    if (message:sub(1, 1) == "/") then return; end
     if (not mt_irc.connected_players[name]) then
-        minetest.chat_send_player(name, "IRC: You are not connected. Please use /join");
+        --minetest.chat_send_player(name, "IRC: You are not connected. Please use /join");
         return;
     end
     if (not mt_irc.connect_ok) then return; end
@@ -105,4 +106,8 @@ minetest.register_on_chat_message(function ( name, message )
         name = name;
         message = message;
     };
+end);
+
+minetest.register_on_shutdown(function ( )
+    irc.quit("Game shutting down.");
 end);

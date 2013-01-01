@@ -71,3 +71,21 @@ mt_irc.register_bot_command("whereis", {
         irc.say(from, "There's No player named `"..args.."'");
     end;
 });
+
+local starttime = os.time();
+
+mt_irc.register_bot_command("uptime", {
+    params = "";
+    description = "Tell how much time the server has been up";
+    privs = { shout=true; };
+    func = function ( name, param )
+        local t = os.time();
+        local diff = os.difftime(t, starttime);
+        local fmt = "Server has been running for %d:%02d:%02d";
+        irc.say(name, fmt:format(
+            math.floor(diff / 60 / 60),
+            math.mod(math.floor(diff / 60), 60),
+            math.mod(math.floor(diff), 60)
+        ));
+    end;
+});

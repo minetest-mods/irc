@@ -1,0 +1,45 @@
+
+IRC Mod API
+-----------
+This file documents the API exported by the IRC mod.
+
+
+BASICS
+------
+In order to allow your mod to interface with this mod, you must add `irc'
+ (without the quotes) to your mod's `depends.txt' file.
+
+
+REFERENCE
+---------
+These are the functions defined by the mod:
+
+mt_irc.say ( [name ,] message )
+  Sends <message> to either the channel (if <name> is nil or not specified),
+   or to the given user (if <name> is specified).
+  Example:
+    mt_irc.say("Hello, Channel!")
+    mt_irc.say("john1234", "How are you?")
+
+mt_irc.register_bot_command ( name, cmddef )
+  Registers a new bot command named <name>.
+  When an user sends a private message to the bot starting with `!name', the
+   command's function is called.
+  Here's the command definition (<cmddef>):
+    cmddef = {
+      params = "<param1> ...",      -- A short help text for !help
+      description = "My command",   -- What does the command? (one-liner)
+      func = function ( from, param )
+        -- This function gets called when the command is invoked.
+        -- <from> is the name of the user that invoked the command.
+        -- <param> is the rest of the input (after removing !command)
+      end,
+    };
+  Example:
+    mt_irc.register_bot_command("hello", {
+      params = nil, -- No params
+      description = "Greet user",
+      func = function ( from, param )
+        mt_irc.say(from, "Hello!");
+      end,
+    });

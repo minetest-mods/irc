@@ -108,12 +108,3 @@ minetest.register_chatcommand("who", {
         minetest.chat_send_player(name, "Players On Channel:"..s);
     end;
 });
-
-minetest.register_chatcommand("uptime", {
-    params = "";
-    description = "Tell how much time the server has been up";
-    privs = { shout=true; };
-    func = function ( name, param )
-        local t = os.time();
-    end;
-});
