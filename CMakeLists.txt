@@ -136,8 +136,8 @@ add_custom_target(pack_mod
     COMMAND ${CMAKE_COMMAND} -E copy src/chatcmds.lua ${dir}
     COMMAND ${CMAKE_COMMAND} -E copy src/botcmds.lua ${dir}
     COMMAND ${CMAKE_COMMAND} -E copy README.txt ${dir}
+    COMMAND ${CMAKE_COMMAND} -E copy doc/API.txt ${dir}
     COMMAND ${CMAKE_COMMAND} -E copy doc/LICENSE.txt ${dir}
     COMMAND ${CMAKE_COMMAND} -E copy doc/CHANGES.txt ${dir}
     COMMAND ${CMAKE_COMMAND} -E copy doc/TODO.txt ${dir}
-    COMMAND ${CMAKE_COMMAND} -E copy doc/TESTED_ON.txt ${dir}
 )

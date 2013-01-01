@@ -48,7 +48,7 @@ INSTALLING
 ----------
 Just put the created `irc' directory in any of the directories where
  Minetest looks for mods. For more information, see:
-    http://wiki.minetest.net/wiki/Installing_mods
+    http://wiki.minetest.com/wiki/Installing_mods
 
 
 SETTINGS
