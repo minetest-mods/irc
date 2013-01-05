@@ -42,7 +42,7 @@ if (not mt_irc.server_nick) then
 end
 mt_irc.server = (mt_irc.server or "irc.freenode.net");
 mt_irc.port = (mt_irc.port or 6667);
-mt_irc.channel = (mt_irc.channel or "#minetest-irc-testing");
+mt_irc.channel = (mt_irc.channel or "##mt-irc-mod");
 mt_irc.dtime = (mt_irc.dtime or 0.2);
 mt_irc.timeout = (mt_irc.timeout or 60.0);
 mt_irc.message_format_out = (mt_irc.message_format_out or "<$(nick)> $(message)");
@@ -54,32 +54,6 @@ minetest.register_privilege("irc_admin", {
     description = "Allow IRC administrative tasks to be performed.";
     give_to_singleplayer = true;
 });
-
-minetest.register_globalstep(function ( dtime )
-    if (not mt_irc.connect_ok) then return; end
-    mt_irc.cur_time = mt_irc.cur_time + dtime;
-    if (mt_irc.cur_time >= mt_irc.dtime) then
-        if (mt_irc.buffered_messages) then
-            for _, msg in ipairs(mt_irc.buffered_messages) do
-                local t = {
-                    name=(msg.name or "<BUG:no one is saying this>");
-                    message=(msg.message or "<BUG:there is no message>");
-                };
-                local text = mt_irc.message_format_out:gsub("%$%(([^)]+)%)", t)
-                irc.say(mt_irc.channel, text);
-            end
-            mt_irc.buffered_messages = nil;
-        end
-        irc.poll();
-        mt_irc.cur_time = mt_irc.cur_time - mt_irc.dtime;
-        --local plys = minetest.get_connected_players();
-        --if ((#plys <= 0) and (minetest.is_singleplayer())) then
-        --    minetest.after(1.0, function ( )
-        --        irc.quit("Closing.");
-        --    end)
-        --end
-    end
-end);
 
 mt_irc.part = function ( name )
     if (not mt_irc.connected_players[name]) then
@@ -120,7 +94,42 @@ mt_irc.connect = function ( )
         local s = "DEBUG: irc.connect failed";
         minetest.debug(s);
         minetest.chat_send_all(s);
+        return;
     end
+    while (not mt_irc.got_motd) do
+        irc.poll();
+    end
+
+    minetest.register_globalstep(function ( dtime )
+        if (not mt_irc.connect_ok) then return; end
+        if (not mt_irc.players_connected) then
+            for _,player in ipairs(minetest.get_connected_players()) do
+                mt_irc.connected_players[player:get_player_name()] = mt_irc.auto_join;
+            end
+        end
+        mt_irc.cur_time = mt_irc.cur_time + dtime;
+        if (mt_irc.cur_time >= mt_irc.dtime) then
+            if (mt_irc.buffered_messages) then
+                for _, msg in ipairs(mt_irc.buffered_messages) do
+                    local t = {
+                        name=(msg.name or "<BUG:no one is saying this>");
+                        message=(msg.message or "<BUG:there is no message>");
+                    };
+                    local text = mt_irc.message_format_out:gsub("%$%(([^)]+)%)", t)
+                    irc.say(mt_irc.channel, text);
+                end
+                mt_irc.buffered_messages = nil;
+            end
+            irc.poll();
+            mt_irc.cur_time = mt_irc.cur_time - mt_irc.dtime;
+            --local plys = minetest.get_connected_players();
+            --if ((#plys <= 0) and (minetest.is_singleplayer())) then
+            --    minetest.after(1.0, function ( )
+            --        irc.quit("Closing.");
+            --    end)
+            --end
+        end
+    end);
 end
 
 mt_irc.say = function ( to, msg )

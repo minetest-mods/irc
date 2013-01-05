@@ -7,10 +7,8 @@ minetest.register_on_joinplayer(function ( player )
 end);
 
 irc.register_callback("connect", function ( )
+    mt_irc.got_motd = true;
     irc.join(mt_irc.channel);
-    for _,player in ipairs(minetest.get_connected_players()) do
-        mt_irc.connected_players[player:get_player_name()] = mt_irc.auto_join;
-    end
 end);
 
 irc.register_callback("channel_msg", function ( channel, from, message )
