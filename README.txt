@@ -22,7 +22,7 @@ For Unix-based systems, you should not have any problems with the C compiler
 Quick one line build for linux.  
 
 git clone https://github.com/kaeza/minetest-irc.git && cd minetest-irc && mkdir build && cd build && cmake .. && make && make pack_mod && cp -R irc <your mod directory>
-Plese change the "cp -R irc" to fit your install of minetest.
+Please change the "cp -R irc" to fit your install of minetest.
 
 To compile and "pack" the mod:
 
@@ -59,7 +59,7 @@ All settings are changed in the `config.lua' file. If any of these settings
     mt_irc.server (string, default "irc.freenode.net")
         This is the IRC server the mod connects to.
 
-    mt_irc.channel (string, default "#minetest-irc-testing")
+    mt_irc.channel (string, default "##mt-irc-mod")
         The IRC channel to join.
 
     mt_irc.dtime (number, default 0.2)
@@ -123,7 +123,7 @@ All settings are changed in the `config.lua' file. If any of these settings
          `irc_admin' privilege has to use the /irc_connect command to
          connect to the server.
 
-    mt_irc.auto_connect (boolean, default false)
+    mt_irc.auto_join (boolean, default false)
         If true, players join the channel automatically upon entering the
          game. If false, each user must manually use the /join command to
          join the channel. In any case, the players may use the /part
@@ -147,10 +147,20 @@ This mod also adds a few chat commands:
     /part
         Part the IRC channel.
 
+    /irc_connect
+        Connect the bot manually to the IRC network.
+
+    /irc_disconnect
+        Disconnect the bot manually to the IRC network (this does not
+        shutdown the game).
+
+    /irc_reconnect
+        A combination of /irc_disconnect and /irc_connect.
+
 You can also send private messages from IRC to in-game players, though
  it's a bit tricky.
 
-To do it, you must send a private message to the "proxy" user (set with
+To do it, you must send a private message to the bot (set with
  the `mt_irc.server_nick' option above), in the following format:
     >playername message
 For example, if there's a player named `mtuser', you can send him/her
