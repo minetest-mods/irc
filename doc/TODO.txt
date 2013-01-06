@@ -17,10 +17,3 @@ Known Bugs
 
   - Apparently, some users have to install `luasocket' separately, since
      the provided one won't compile/work (reported by leo_rockway).
-
-  - Some users complain about getting a "Quit: Excess Flood" message
-     when connecting (reported by OldCoder). This may be an issue with
-     the IRC server. Need more feedback.
-
-  - Crosscompiling to MinGW32 needs a few manual tweaks (renaming
-     `libluasocket.dll' to just `luasocket.dll').

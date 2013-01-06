@@ -1,5 +1,8 @@
 
 Version 0.1.2:
+    - Fixed the Quit: Excess Flood bug.
+    - Removed the `packmod' scripts in favor of a dedicated CMake target.
+    - Fixed packaging of mod under MinGW32.
     - Export some basic API so other mods may use the connection to send
        messages, etc.
     - Added /irc_disconnect and /irc_reconnect chat commands.
