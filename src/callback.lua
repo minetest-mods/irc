@@ -79,6 +79,17 @@ irc.register_callback("private_msg", function ( from, message )
     minetest.chat_send_player(player_to, "PRIVATE: "..text);
 end);
 
+irc.register_callback("kick", function ( chaninfo, to, from )
+    if (mt_irc.connect_ok) then
+        mt_irc.connect_ok = false;
+        minetest.chat_send_all("IRC: Bot was kicked by "..from..". Reconnecting bot in 5 seconds...");
+        mt_irc.got_motd = true;
+        mt_irc.connect_ok = false;
+        irc.quit("Kicked");
+        minetest.after(5, mt_irc.connect);
+    end
+end);
+
 irc.register_callback("nick_change", function ( from, old_nick )
     if (not mt_irc.connect_ok) then return; end
 end);
@@ -108,4 +119,7 @@ end);
 
 minetest.register_on_shutdown(function ( )
     irc.quit("Game shutting down.");
+    for n = 1, 5 do
+        irc.poll();
+    end
 end);

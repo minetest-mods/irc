@@ -59,6 +59,7 @@ minetest.register_chatcommand("irc_reconnect", {
         if (mt_irc.connect_ok) then
             irc.quit("Reconnecting BOT...");
             minetest.chat_send_player(name, "IRC: Reconnecting bot...");
+            mt_irc.got_motd = true;
             mt_irc.connect_ok = false;
         end
         mt_irc.connect();
