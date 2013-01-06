@@ -1,4 +1,14 @@
 
+Version 0.1.2:
+    - Export some basic API so other mods may use the connection to send
+       messages, etc.
+    - Added /irc_disconnect and /irc_reconnect chat commands.
+    - Added some basic documentation about the API exported by this mod.
+       More coming soon.
+    - Added automatic reconnection in case the bot is kicked from the
+       channel.
+    - Fixed delay while the bot waits for the Message Of The Day (or topic)
+
 Version 0.1.1:
     - Moved all user configuration to `config.lua'.
     - Added formatted messages for sent and received messages and options
