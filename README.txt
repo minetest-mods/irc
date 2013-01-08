@@ -183,8 +183,6 @@ I'd like to thank the users who supported this mod both on the Minetest
 
 LICENSE
 -------
-This license applies only to the `init.lua' and `config.lua' files.
-
             DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE 
                     Version 2, December 2004 
 

@@ -1,7 +1,21 @@
 
+-- IRC Mod for Minetest
+-- By Diego Martínez <kaeza@users.sf.net>
+--
+-- This mod allows to tie a Minetest server to an IRC channel.
+--
+-- This program is free software. It comes without any warranty, to
+-- the extent permitted by applicable law. You can redistribute it
+-- and/or modify it under the terms of the Do What The Fuck You Want
+-- To Public License, Version 2, as published by Sam Hocevar. See
+-- http://sam.zoy.org/wtfpl/COPYING for more details.
+--
+
+local irc = require("irc");
+
 minetest.register_on_joinplayer(function ( player )
 
-    irc.say(mt_irc.channel, "*** "..player:get_player_name().." joined the game");
+    mt_irc.say(mt_irc.channel, "*** "..player:get_player_name().." joined the game");
     mt_irc.connected_players[player:get_player_name()] = mt_irc.auto_join;
 
 end);
@@ -39,7 +53,7 @@ local function bot_command ( from, message )
     end
 
     if (not mt_irc.bot_commands[cmd]) then
-        irc.say(from, "Unknown command `"..cmd.."'. Try `!help'.");
+        mt_irc.say(from, "Unknown command `"..cmd.."'. Try `!help'.");
         return;
     end
 
@@ -80,14 +94,11 @@ irc.register_callback("private_msg", function ( from, message )
 end);
 
 irc.register_callback("kick", function ( chaninfo, to, from )
-    if (mt_irc.connect_ok) then
-        mt_irc.connect_ok = false;
-        minetest.chat_send_all("IRC: Bot was kicked by "..from..". Reconnecting bot in 5 seconds...");
-        mt_irc.got_motd = true;
-        mt_irc.connect_ok = false;
-        irc.quit("Kicked");
-        minetest.after(5, mt_irc.connect);
-    end
+    minetest.chat_send_all("IRC: Bot was kicked by "..from..". Reconnecting bot in 5 seconds...");
+    mt_irc.got_motd = false;
+    mt_irc.connect_ok = false;
+    irc.quit("Kicked");
+    minetest.after(5, mt_irc.connect);
 end);
 
 irc.register_callback("nick_change", function ( from, old_nick )
@@ -123,3 +134,11 @@ minetest.register_on_shutdown(function ( )
         irc.poll();
     end
 end);
+
+irc.handlers.on_error = function (from, respond_to)
+    minetest.chat_send_all("IRC: Ping timeout. Reconnecting bot in 5 seconds...");
+    mt_irc.got_motd = false;
+    mt_irc.connect_ok = false;
+    irc.quit("Ping timeout");
+    minetest.after(5, mt_irc.connect);
+end
