@@ -36,7 +36,7 @@ mt_irc.timeout = nil;
 
 -- Nickname when using single conection (string, default "minetest-"..<server-id>);
 --  (<server-id> is the server IP address packed as a 32 bit integer).
-mt_irc.server_nick = "HelloIRC";
+mt_irc.server_nick = nil;
 
 -- Password to use when using single connection (string, default "")
 mt_irc.password = nil;

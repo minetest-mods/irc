@@ -113,12 +113,18 @@ minetest.register_on_leaveplayer(function ( player )
 end);
 
 minetest.register_on_chat_message(function ( name, message )
+    if (not mt_irc.connect_ok) then return; end
     if (message:sub(1, 1) == "/") then return; end
     if (not mt_irc.connected_players[name]) then
         --minetest.chat_send_player(name, "IRC: You are not connected. Please use /join");
         return;
     end
-    if (not mt_irc.connect_ok) then return; end
+    local privs = minetest.get_player_privs(name); 
+    if (not privs.shout) then
+        minetest.chat_send_player(name, "IRC: No shout priv");
+        irc.say(mt_irc.channel, "DEBUG: message from unpriviledged player: "..name);
+        return;
+    end
     if (not mt_irc.buffered_messages) then
         mt_irc.buffered_messages = { };
     end
