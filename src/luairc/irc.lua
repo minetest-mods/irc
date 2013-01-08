@@ -43,11 +43,11 @@ local icallbacks = {
     ctcp_version = {},
 }
 local requestinfo = {whois = {}}
-local handlers = {}
-local ctcp_handlers = {}
-local user_handlers = {}
-local serverinfo = {}
-local ip = nil
+handlers = {}
+ctcp_handlers = {}
+user_handlers = {}
+serverinfo = {}
+ip = nil
 -- }}}
 
 -- defaults {{{

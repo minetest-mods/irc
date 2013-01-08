@@ -1,5 +1,6 @@
+
 -- IRC Mod for Minetest
--- (C) 2012 Diego Martínez <kaeza@users.sf.net>
+-- By Diego Martínez <kaeza@users.sf.net>
 --
 -- This mod allows to tie a Minetest server to an IRC channel.
 --
@@ -142,7 +143,7 @@ mt_irc.say = function ( to, msg )
     irc.say(to, msg);
 end
 
-mt_irc._irc = irc;
+mt_irc.irc = irc;
 
 dofile(MODPATH.."/callback.lua");
 dofile(MODPATH.."/chatcmds.lua");
