@@ -105,6 +105,13 @@ irc.register_callback("nick_change", function ( from, old_nick )
     if (not mt_irc.connect_ok) then return; end
 end);
 
+irc.register_callback("channel_act", function ( servinfo, from, message)
+    local text = "*** "..from.." "..message;
+    for k, v in pairs(mt_irc.connected_players) do
+        if (v) then minetest.chat_send_player(k, text); end
+    end
+end);
+
 minetest.register_on_leaveplayer(function ( player )
     local name = player:get_player_name();
     mt_irc.connected_players[name] = false;
@@ -115,14 +122,8 @@ end);
 minetest.register_on_chat_message(function ( name, message )
     if (not mt_irc.connect_ok) then return; end
     if (message:sub(1, 1) == "/") then return; end
-    if (not mt_irc.connected_players[name]) then
-        --minetest.chat_send_player(name, "IRC: You are not connected. Please use /join");
-        return;
-    end
-    local privs = minetest.get_player_privs(name); 
-    if (not privs.shout) then
-        minetest.chat_send_player(name, "IRC: No shout priv");
-        irc.say(mt_irc.channel, "DEBUG: message from unpriviledged player: "..name);
+    if (not mt_irc.connected_players[name]) then return; end
+    if (not minetest.check_player_privs(name, {shout=true})) then
         return;
     end
     if (not mt_irc.buffered_messages) then
@@ -142,7 +143,9 @@ minetest.register_on_shutdown(function ( )
 end);
 
 irc.handlers.on_error = function (from, respond_to)
-    minetest.chat_send_all("IRC: Ping timeout. Reconnecting bot in 5 seconds...");
+    for k, v in pairs(mt_irc.connected_players) do
+        if (v) then minetest.chat_send_player(k, text); end
+    end
     mt_irc.got_motd = false;
     mt_irc.connect_ok = false;
     irc.quit("Ping timeout");
