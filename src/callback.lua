@@ -109,6 +109,20 @@ irc.register_callback("nick_change", function ( from, old_nick )
     end
 end);
 
+irc.register_callback("join", function ( servinfo, from )
+    local text = "*** "..from.." joined "..mt_irc.channel;
+    for k, v in pairs(mt_irc.connected_players) do
+        if (v) then minetest.chat_send_player(k, text); end
+    end
+end);
+
+irc.register_callback("part", function ( servinfo, from, part_msg )
+    local text = "*** "..from.." left "..mt_irc.channel.." ("..part_msg..")";
+    for k, v in pairs(mt_irc.connected_players) do
+        if (v) then minetest.chat_send_player(k, text); end
+    end
+end);
+
 irc.register_callback("channel_act", function ( servinfo, from, message)
     if (not mt_irc.connect_ok) then return; end
     local text = "*** "..from.." "..message;
