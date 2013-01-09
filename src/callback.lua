@@ -103,9 +103,14 @@ end);
 
 irc.register_callback("nick_change", function ( from, old_nick )
     if (not mt_irc.connect_ok) then return; end
+    local text = "["..old_nick.." changed his nick to "..from.."]";
+    for k, v in pairs(mt_irc.connected_players) do
+        if (v) then minetest.chat_send_player(k, text); end
+    end
 end);
 
 irc.register_callback("channel_act", function ( servinfo, from, message)
+    if (not mt_irc.connect_ok) then return; end
     local text = "*** "..from.." "..message;
     for k, v in pairs(mt_irc.connected_players) do
         if (v) then minetest.chat_send_player(k, text); end
