@@ -7,6 +7,8 @@ This mod is just a glue between luasocket, LuaIRC, and Minetest. It
  provides a two-way communication between the in-game chat, and an
  arbitrary IRC channel. 
 
+The forum topic is at http://minetest.net/forum/viewtopic.php?id=3905
+
  
 COMPILING
 ---------
@@ -172,14 +174,21 @@ To avoid possible misunderstandings (since all in-game players use the
  private messages that are not in that format, and will send back a
  nice reminder as a private message.
 
+The bot also supports some basic commands, which are invoked by sending
+ a private message to it. Use `!help' to get a list of commands, and
+ `!help <command>' to get help about a specific command.
+
 
 THANKS
 ------
 I'd like to thank the users who supported this mod both on the Minetest
  Forums and on the #minetest channel. In no particular order:
 
-    leo_rockway, VanessaE, OldCoder, sfan5, RealBadAngel, Muadtralk/sdzen,
-     Josh, celeron55, KikaRz, and many others I forgot about (sorry!).
+   Shaun/kizeren, RAPHAEL, DARGON, Calinou, Exio, vortexlabs/mrtux,
+    marveidemanis, marktraceur, jmf/john_minetest, sdzen/Muadtralk,
+    VanessaE, PilzAdam, sfan5, celeron55, KikaRz, OldCoder, RealBadAngel,
+    and all the people who commented in the forum topic. Thanks to you all!
+
 
 LICENSE
 -------
