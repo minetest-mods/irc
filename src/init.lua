@@ -116,7 +116,7 @@ mt_irc.connect = function ( )
                         name=(msg.name or "<BUG:no one is saying this>");
                         message=(msg.message or "<BUG:there is no message>");
                     };
-                    local text = mt_irc.message_format_out:gsub("%$%(([^)]+)%)", t)
+                    local text = mt_irc.message_format_out:expandvars(t);
                     irc.say(mt_irc.channel, text);
                 end
                 mt_irc.buffered_messages = nil;
@@ -144,6 +144,13 @@ mt_irc.say = function ( to, msg )
 end
 
 mt_irc.irc = irc;
+
+-- Misc helpers
+
+-- Requested by Exio
+string.expandvars = function ( s, vars )
+    return s:gsub("%$%(([^)]+)%)", vars);
+end
 
 dofile(MODPATH.."/callback.lua");
 dofile(MODPATH.."/chatcmds.lua");

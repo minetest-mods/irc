@@ -13,6 +13,26 @@
 
 local irc = require("irc");
 
+mt_irc.callbacks = { };
+
+mt_irc._callback = function ( name, ... )
+    local list = mt_irc.callbacks[name];
+    if (not list) then return; end
+    for n = 1, #list do
+        local r = list[n](...);
+        if (r) then return r; end
+    end
+end
+
+mt_irc.register_callback = function ( name, func )
+    local list = mt_irc.callbacks[name];
+    if (not list) then
+        list = { };
+        mt_irc.callbacks[name] = list;
+    end
+    list[#list + 1] = func;
+end
+
 minetest.register_on_joinplayer(function ( player )
 
     mt_irc.say(mt_irc.channel, "*** "..player:get_player_name().." joined the game");
@@ -35,6 +55,7 @@ irc.register_callback("channel_msg", function ( channel, from, message )
         channel=mt_irc.channel;
     };
     local text = mt_irc.message_format_in:gsub("%$%(([^)]+)%)", t)
+    if (mt_irc._callback("channel_msg", from, message, text)) then return; end
     for k, v in pairs(mt_irc.connected_players) do
         if (v) then minetest.chat_send_player(k, text); end
     end
@@ -89,7 +110,8 @@ irc.register_callback("private_msg", function ( from, message )
         port=mt_irc.port;
         channel=mt_irc.channel;
     };
-    local text = mt_irc.message_format_in:gsub("%$%(([^)]+)%)", t)
+    local text = mt_irc.message_format_in:expandvars(t);
+    if (mt_irc._callback("private_msg", from, player_to, message, text)) then return; end
     minetest.chat_send_player(player_to, "PRIVATE: "..text);
 end);
 

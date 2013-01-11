@@ -30,7 +30,7 @@ minetest.register_chatcommand("msg", {
             name=name;
             message=msg;
         };
-        local text = mt_irc.message_format_out:gsub("%$%(([^)]+)%)", t)
+        local text = mt_irc.message_format_out:expandvars(t);
         irc.send("PRIVMSG", name, text);
     end;
 });

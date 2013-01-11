@@ -12,7 +12,6 @@ In order to allow your mod to interface with this mod, you must add `irc'
 
 REFERENCE
 ---------
-These are the functions defined by the mod:
 
 mt_irc.say ( [name ,] message )
   Sends <message> to either the channel (if <name> is nil or not specified),
@@ -40,6 +39,77 @@ mt_irc.register_bot_command ( name, cmddef )
       params = nil, -- No params
       description = "Greet user",
       func = function ( from, param )
-        mt_irc.say(from, "Hello!");
+        mt_irc.say(from, "Hello!")
       end,
     });
+
+mt_irc.connected_players [ name ]
+  This table holds the players who are currently on the channel (may be less
+   than the players in the game). It is modified by the /part and /join chat
+   commands.
+  Example:
+    if (mt_irc.connected_players["joe"]) then
+      -- Joe is talking on IRC
+    end
+
+mt_irc.register_callback ( name, func )
+  Registers a function to be called when an event happens. <name> is the name
+   of the event, and <func> is the function to be called. See CALLBACKS below
+   for more information
+  Example:
+    mt_irc.register_callback("channel_msg", function ( from, msg )
+      if (from == "joe") then
+        mt_irc.say("joe", "You are not allowed to do that!")
+        return true
+      end
+    end)
+
+This mod also supplies some utility functions:
+
+string.expandvars ( string, vars )
+  Expands all occurrences of the pattern "$(varname)" with the value of
+   `varname' in the <vars> table. Variable names not found on the table
+   are left verbatim in the string.
+  Example:
+    local tpl = "$(foo) $(bar) $(baz)"
+    local s = tpl:expandvars({ foo=1, bar="Hello" })
+    -- `s' now contains "1 Hello $(baz)" 
+
+In addition, all the configuration options decribed in `README.txt' are
+ available to other mods, though they should be considered "read only". Do
+ not modify these settings at runtime or you will most likely crash the
+ server!
+
+
+CALLBACKS
+---------
+The `mt_irc.register_callback' function can register functions to be called
+ when some events happen. These are the events supported:
+
+channel_msg ( from, message )
+  Called right before the bot sends a message to the channel.
+  <from> is the name of the user sending the message. <message> is the
+   unmodified message sent by the user.
+  Returning any value other than nil or false will prevent the message from
+   being sent.
+  Example:
+    mt_irc.register_callback("channel_msg", function ( from, msg )
+      if (from == "joe") then
+        mt_irc.say("joe", "You are not allowed to do that!")
+        return true
+      end
+    end)
+
+private_msg ( from, to, message )
+  Called right before the bot sends a private message to an user.
+  <from> is the name of the user sending the message. <to> is the recipient
+   of the message. <message> is the unmodified message sent by the user.
+  Returning any value other than nil or false will prevent the message from
+   being sent.
+  Example:
+    mt_irc.register_callback("private_msg", function ( from, to, msg )
+      if (to == "admin") then
+        mt_irc.say(from, "You are not allowed to do that!")
+        return true
+      end
+    end)
