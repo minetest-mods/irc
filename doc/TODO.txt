@@ -4,6 +4,7 @@ TODO List
 
   - Check for availability of nickname on join, and select a different one
      until one is available.
+  - Implement more callbacks for `mt_irc.register_callback'.
 
 Not TODO List
 -------------

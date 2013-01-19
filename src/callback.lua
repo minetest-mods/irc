@@ -183,12 +183,29 @@ minetest.register_on_shutdown(function ( )
     end
 end);
 
-irc.handlers.on_error = function (from, respond_to)
+irc.handlers.on_error = function (...) --( from, respond_to )
     for k, v in pairs(mt_irc.connected_players) do
-        if (v) then minetest.chat_send_player(k, text); end
+        if (v) then minetest.chat_send_player(k, "IRC: Bot had a network error. Reconnecting in 5 seconds..."); end
+    end
+    for _, v in ipairs({...}) do
+        minetest.chat_send_all(dump(v));
+    end
+    irc.quit("Network error");
+    for n = 1, 5 do
+        irc.poll();
     end
     mt_irc.got_motd = false;
     mt_irc.connect_ok = false;
-    irc.quit("Ping timeout");
     minetest.after(5, mt_irc.connect);
+end
+
+irc.handlers.on_err_nicknameinuse = function ( from, respond_to )
+    irc.quit("Nick in use");
+    for n = 1, 5 do
+        irc.poll();
+    end
+    mt_irc.got_motd = false;
+    mt_irc.connect_ok = false;
+    mt_irc.server_nick = mt_irc.server_nick:sub(1, -2)..math.floor(math.random(10));
+    mt_irc.connect();
 end
