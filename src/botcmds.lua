@@ -5,6 +5,7 @@ mt_irc.bot_help = function ( from, cmdname )
     local cmd = mt_irc.bot_commands[cmdname];
     if (not cmd) then
         irc.say(from, "Unknown command `"..cmdname.."'");
+        return;
     end
     local usage = "Usage: !"..cmdname;
     if (cmd.params) then usage = usage.." "..cmd.params; end

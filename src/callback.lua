@@ -206,6 +206,8 @@ irc.handlers.on_err_nicknameinuse = function ( from, respond_to )
     end
     mt_irc.got_motd = false;
     mt_irc.connect_ok = false;
-    mt_irc.server_nick = mt_irc.server_nick:sub(1, -2)..math.floor(math.random(10));
+    local n = (tonumber(mt_irc.server_nick:sub(-1)) or 0) + 1;
+    if (n == 10) then n = 1; end
+    mt_irc.server_nick = mt_irc.server_nick:sub(1, -2)..n;
     mt_irc.connect();
 end
