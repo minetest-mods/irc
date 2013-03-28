@@ -61,25 +61,17 @@ mt_irc.part = function ( name )
         minetest.chat_send_player(name, "IRC: You are not in the channel.");
         return;
     end
-    mt_irc.connected_players[name] = false;
+    mt_irc.connected_players[name] = nil;
     minetest.chat_send_player(name, "IRC: You are now out of the channel.");
-    --irc.send(mt_irc.channel, name.." is no longer in the channel.");
-    irc.send(name.." is no longer in the channel.");
 end
 
 mt_irc.join = function ( name )
-    local function do_join ( name )
-        if (mt_irc.connected_players[name]) then
-            minetest.chat_send_player(name, "IRC: You are already in the channel.");
-            return;
-        end
-        mt_irc.connected_players[name] = true;
-        mt_irc.join(mt_irc.channel);
-        minetest.chat_send_player(name, "IRC: You are now in the channel.");
+    if (mt_irc.connected_players[name]) then
+        minetest.chat_send_player(name, "IRC: You are already in the channel.");
+        return;
     end
-    if (not pcall(do_join, name)) then
-        mt_irc.connected_players[name] = false;
-    end
+    mt_irc.connected_players[name] = true;
+    minetest.chat_send_player(name, "IRC: You are now in the channel.");
 end
 
 mt_irc.connect = function ( )
@@ -107,6 +99,7 @@ mt_irc.connect = function ( )
             for _,player in ipairs(minetest.get_connected_players()) do
                 mt_irc.connected_players[player:get_player_name()] = mt_irc.auto_join;
             end
+            mt_irc.players_connected = true;
         end
         mt_irc.cur_time = mt_irc.cur_time + dtime;
         if (mt_irc.cur_time >= mt_irc.dtime) then
