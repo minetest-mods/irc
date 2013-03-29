@@ -15,12 +15,12 @@ local irc = require("irc");
 
 mt_irc.callbacks = { };
 
-mt_irc._callback = function ( name, ... )
+mt_irc._callback = function ( name, breakonreturn, ... )
     local list = mt_irc.callbacks[name];
     if (not list) then return; end
     for n = 1, #list do
         local r = list[n](...);
-        if (r) then return r; end
+        if (breakonreturn and (r ~= nil)) then return r; end
     end
 end
 
@@ -34,10 +34,17 @@ mt_irc.register_callback = function ( name, func )
 end
 
 minetest.register_on_joinplayer(function ( player )
+    local name = player:get_player_name();
+    mt_irc.connected_players[name] = mt_irc.auto_join;
+    if (not mt_irc.connect_ok) then return; end
+    mt_irc.say("*** "..name.." joined the game");
+end);
 
-    mt_irc.say(mt_irc.channel, "*** "..player:get_player_name().." joined the game");
-    mt_irc.connected_players[player:get_player_name()] = mt_irc.auto_join;
-
+minetest.register_on_leaveplayer(function ( player )
+    local name = player:get_player_name();
+    mt_irc.connected_players[name] = nil;
+    if (not mt_irc.connect_ok) then return; end
+    mt_irc.say("*** "..name.." left the game");
 end);
 
 irc.register_callback("connect", function ( )
@@ -125,6 +132,7 @@ end);
 
 irc.register_callback("nick_change", function ( from, old_nick )
     if (not mt_irc.connect_ok) then return; end
+    mt_irc._callback("nick_change", false, old_nick, from);
     local text = "["..old_nick.." changed his nick to "..from.."]";
     for k, v in pairs(mt_irc.connected_players) do
         if (v) then minetest.chat_send_player(k, text); end
@@ -139,6 +147,7 @@ irc.register_callback("join", function ( servinfo, from )
 end);
 
 irc.register_callback("part", function ( servinfo, from, part_msg )
+    mt_irc._callback("part", false, from, part_msg);
     local text = "*** "..from.." left "..mt_irc.channel.." ("..part_msg..")";
     for k, v in pairs(mt_irc.connected_players) do
         if (v) then minetest.chat_send_player(k, text); end
@@ -151,13 +160,6 @@ irc.register_callback("channel_act", function ( servinfo, from, message)
     for k, v in pairs(mt_irc.connected_players) do
         if (v) then minetest.chat_send_player(k, text); end
     end
-end);
-
-minetest.register_on_leaveplayer(function ( player )
-    local name = player:get_player_name();
-    mt_irc.connected_players[name] = false;
-    if (not mt_irc.connect_ok) then return; end
-    irc.say(mt_irc.channel, "*** "..name.." left the game");
 end);
 
 minetest.register_on_chat_message(function ( name, message )
@@ -211,3 +213,14 @@ irc.handlers.on_err_nicknameinuse = function ( from, respond_to )
     mt_irc.server_nick = mt_irc.server_nick:sub(1, -2)..n;
     mt_irc.connect();
 end
+
+-- TESTING
+--[[
+mt_irc.register_callback("part", function ( nick, part_msg )
+  mt_irc.say("TEST: "..nick.." has left the building!");
+end)
+
+mt_irc.register_callback("nick_change", function ( old_nick, new_nick )
+  mt_irc.say("TEST: "..old_nick.." -> "..new_nick);
+end)
+]]

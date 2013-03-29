@@ -86,30 +86,56 @@ CALLBACKS
 The `mt_irc.register_callback' function can register functions to be called
  when some events happen. These are the events supported:
 
-channel_msg ( from, message )
+msg_out ( from, message )
   Called right before the bot sends a message to the channel.
   <from> is the name of the user sending the message. <message> is the
    unmodified message sent by the user.
-  Returning any value other than nil or false will prevent the message from
-   being sent.
+  Return values:
+    "string"    New message to be sent.
+    false       Filter out the message (do not send anything).
+    nil         Use original message
+    other       Use a string repr of the value as message.
   Example:
-    mt_irc.register_callback("channel_msg", function ( from, msg )
+    mt_irc.register_callback("msg_out", function ( from, msg )
       if (from == "joe") then
         mt_irc.say("joe", "You are not allowed to do that!")
-        return true
+        return false
       end
     end)
 
-private_msg ( from, to, message )
+msg_in ( from, to, message )
   Called right before the bot sends a private message to an user.
   <from> is the name of the user sending the message. <to> is the recipient
    of the message. <message> is the unmodified message sent by the user.
-  Returning any value other than nil or false will prevent the message from
-   being sent.
+  Return values:
+    "string"    New message to be sent.
+    false       Filter out the message (do not send anything).
+    nil         Use original message
+    other       Use a string repr of the value as message.
   Example:
-    mt_irc.register_callback("private_msg", function ( from, to, msg )
+    mt_irc.register_callback("msg_in", function ( from, to, msg )
       if (to == "admin") then
         mt_irc.say(from, "You are not allowed to do that!")
         return true
       end
+    end)
+
+nick_change ( old_nick, new_nick )
+  Called when an user in IRC changes nickname.
+  <old_nick> and <new_nick> are self-explanatory.
+  Return value:
+    none
+  Example:
+    mt_irc.register_callback("nick_change", function ( old_nick, new_nick )
+      mt_irc.say(from, "Hello "..new_nick.."! You were "..old_nick.."?")
+    end)
+
+part ( nick, part_msg )
+  Called when an user leaves the IRC channel.
+  <nick> is the user leaving; <part_msg> is the "parting message".
+  Return value:
+    none
+  Example:
+    mt_irc.register_callback("part", function ( nick, part_msg )
+      mt_irc.say(from, nick.." has left the building!")
     end)

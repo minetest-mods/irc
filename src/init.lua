@@ -133,6 +133,12 @@ mt_irc.say = function ( to, msg )
     end
     to = to or mt_irc.channel;
     msg = msg or "";
+    local msg2 = mt_irc._callback("msg_out", true, to, msg);
+    if ((type(msg2) == "boolean") and (not msg2)) then
+        return;
+    elseif (msg2 ~= nil) then
+        msg = tostring(msg);
+    end
     irc.say(to, msg);
 end
 
