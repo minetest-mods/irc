@@ -49,12 +49,12 @@ mt_irc.message_format_out = minetest.setting_get("mt_irc.message_format_out") or
 mt_irc.message_format_in = minetest.setting_get("mt_irc.message_format_in") or "<$(name)@IRC> $(message)";
 
 -- Enable debug output (boolean, default false)
-mt_irc.debug = not minetest.setting_get_bool("mt_irc.disable_debug");
+mt_irc.debug = not minetest.setting_getbool("mt_irc.disable_debug");
 
 -- Whether to automatically join the channed when player joins
 --  (boolean, default true)
-mt_irc.auto_join = not minetest.setting_get_bool("mt_irc.disable_auto_join");
+mt_irc.auto_join = not minetest.setting_getbool("mt_irc.disable_auto_join");
 
 -- Whether to automatically connect to the server on mod load
 --  (boolean, default true) 
-mt_irc.auto_connect = not minetest.setting_get_bool("mt_irc.disable_auto_connect");
+mt_irc.auto_connect = not minetest.setting_getbool("mt_irc.disable_auto_connect");
