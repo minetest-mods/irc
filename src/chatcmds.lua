@@ -22,16 +22,15 @@ minetest.register_chatcommand("irc_msg", {
             minetest.chat_send_player(name, "IRC: You are not connected, use /irc_connect.");
             return;
         end
-        local pos = param:find(" ", 1, true);
-        if (not pos) then return; end
-        local name = param:sub(1, pos - 1);
-        local msg = param:sub(pos + 1);
-        local t = {
-            name=name;
-            message=msg;
-        };
+        local found, _, toname, msg = param:find("^([^%s#]+)%s(.+)");
+        if not found then
+            minetest.chat_send_player(name, "Invalid usage, see /help irc_msg.");
+            return;
+        end
+        local t = {name=name, message=msg};
         local text = mt_irc.message_format_out:expandvars(t);
-        irc.send("PRIVMSG", name, text);
+        mt_irc.say(toname, text);
+        minetest.chat_send_player(name, "Message sent!")
     end;
 });
 
