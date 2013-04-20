@@ -29,27 +29,6 @@ local irc = require 'irc';
 
 irc.DEBUG = ((mt_irc.debug and true) or false);
 
--- Set defaults if not specified.
-if (not mt_irc.server_nick) then
-    local pr = PseudoRandom(os.time());
-    -- Workaround for bad distribution in minetest PRNG implementation.
-    local fmt = "minetest-%02X%02X%02X";
-    mt_irc.server_nick = fmt:format(
-        pr:next(0, 255),
-        pr:next(0, 255),
-        pr:next(0, 255)
-    );
-end
-mt_irc.server = (mt_irc.server or "irc.freenode.net");
-mt_irc.port = (mt_irc.port or 6667);
-mt_irc.channel = (mt_irc.channel or "##mt-irc-mod");
-mt_irc.dtime = (mt_irc.dtime or 0.2);
-mt_irc.timeout = (mt_irc.timeout or 60.0);
-mt_irc.message_format_out = (mt_irc.message_format_out or "<$(nick)> $(message)");
-mt_irc.message_format_in = (mt_irc.message_format_in or "<$(name)@IRC[$(channel)]> $(message)");
-if (mt_irc.connect_on_join == nil) then mt_irc.connect_on_join = false; end
-if (mt_irc.connect_on_load == nil) then mt_irc.connect_on_load = false; end
-
 minetest.register_privilege("irc_admin", {
     description = "Allow IRC administrative tasks to be performed.";
     give_to_singleplayer = true;
