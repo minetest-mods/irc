@@ -13,13 +13,13 @@
 
 local irc = require("irc");
 
-minetest.register_chatcommand("msg", {
+minetest.register_chatcommand("irc_msg", {
     params = "<name> <message>";
     description = "Send a private message to an IRC user";
     privs = { shout=true; };
     func = function ( name, param )
         if (not mt_irc.connect_ok) then
-            minetest.chat_send_player(name, "IRC: You are not connected use /irc_connect.");
+            minetest.chat_send_player(name, "IRC: You are not connected, use /irc_connect.");
             return;
         end
         local pos = param:find(" ", 1, true);
