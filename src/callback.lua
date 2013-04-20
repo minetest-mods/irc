@@ -92,7 +92,7 @@ irc.register_callback("private_msg", function ( from, message )
     if (not mt_irc.connect_ok) then return; end
     local player_to;
     local msg;
-    if (message:sub(1, 1) == ">") then
+    if (message:sub(1, 1) == "@") then
         local pos = message:find(" ", 1, true);
         if (not pos) then return; end
         player_to = message:sub(2, pos - 1);
@@ -102,7 +102,7 @@ irc.register_callback("private_msg", function ( from, message )
         return;
     else
         irc.say(from, 'Message not sent! Please use "!help" to see possible commands.');
-        irc.say(from, '    Or use the ">playername Message" syntax to send a private message.');
+        irc.say(from, '    Or use the "@playername Message" syntax to send a private message.');
         return;
     end
     if (not mt_irc.connected_players[player_to]) then
@@ -119,6 +119,7 @@ irc.register_callback("private_msg", function ( from, message )
     local text = mt_irc.message_format_in:expandvars(t);
     if (mt_irc._callback("private_msg", from, player_to, message, text)) then return; end
     minetest.chat_send_player(player_to, "PRIVATE: "..text);
+    mt_irc.say(from, "Message sent!")
 end);
 
 irc.register_callback("kick", function(chaninfo, nick, kicker)
