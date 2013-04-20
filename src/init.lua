@@ -55,6 +55,26 @@ minetest.register_privilege("irc_admin", {
     give_to_singleplayer = true;
 });
 
+minetest.register_globalstep(function(dtime)
+    if (not mt_irc.connect_ok) then return end
+    mt_irc.cur_time = mt_irc.cur_time + dtime
+    if (mt_irc.cur_time >= mt_irc.dtime) then
+        if (mt_irc.buffered_messages) then
+            for _, msg in ipairs(mt_irc.buffered_messages) do
+                local t = {
+                    name=(msg.name or "<BUG:no one is saying this>"),
+                    message=(msg.message or "<BUG:there is no message>")
+                }
+                local text = mt_irc.message_format_out:expandvars(t)
+                irc.say(mt_irc.channel, text)
+            end
+            mt_irc.buffered_messages = nil
+        end
+        irc.poll()
+        mt_irc.cur_time = mt_irc.cur_time - mt_irc.dtime
+    end
+end)
+
 mt_irc.part = function ( name )
     if (not mt_irc.connected_players[name]) then
         minetest.chat_send_player(name, "IRC: You are not in the channel.");
@@ -91,38 +111,6 @@ mt_irc.connect = function ( )
     while (not mt_irc.got_motd) do
         irc.poll();
     end
-
-    minetest.register_globalstep(function ( dtime )
-        if (not mt_irc.connect_ok) then return; end
-        if (not mt_irc.players_connected) then
-            for _,player in ipairs(minetest.get_connected_players()) do
-                mt_irc.connected_players[player:get_player_name()] = mt_irc.auto_join;
-            end
-            mt_irc.players_connected = true;
-        end
-        mt_irc.cur_time = mt_irc.cur_time + dtime;
-        if (mt_irc.cur_time >= mt_irc.dtime) then
-            if (mt_irc.buffered_messages) then
-                for _, msg in ipairs(mt_irc.buffered_messages) do
-                    local t = {
-                        name=(msg.name or "<BUG:no one is saying this>");
-                        message=(msg.message or "<BUG:there is no message>");
-                    };
-                    local text = mt_irc.message_format_out:expandvars(t);
-                    irc.say(mt_irc.channel, text);
-                end
-                mt_irc.buffered_messages = nil;
-            end
-            irc.poll();
-            mt_irc.cur_time = mt_irc.cur_time - mt_irc.dtime;
-            --local plys = minetest.get_connected_players();
-            --if ((#plys <= 0) and (minetest.is_singleplayer())) then
-            --    minetest.after(1.0, function ( )
-            --        irc.quit("Closing.");
-            --    end)
-            --end
-        end
-    end);
 end
 
 mt_irc.say = function ( to, msg )
