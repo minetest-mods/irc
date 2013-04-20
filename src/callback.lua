@@ -1,4 +1,3 @@
-
 -- IRC Mod for Minetest
 -- By Diego Martínez <kaeza@users.sf.net>
 --
@@ -148,7 +147,12 @@ end);
 
 irc.register_callback("part", function ( servinfo, from, part_msg )
     mt_irc._callback("part", false, from, part_msg);
-    local text = "*** "..from.." left "..mt_irc.channel.." ("..part_msg..")";
+    local text
+    if part_msg then
+        text = "*** "..from.." left "..mt_irc.channel.." ("..part_msg..")";
+    else
+        text = "*** "..from.." left "..mt_irc.channel;
+    end
     for k, v in pairs(mt_irc.connected_players) do
         if (v) then minetest.chat_send_player(k, text); end
     end
