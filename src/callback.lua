@@ -121,12 +121,13 @@ irc.register_callback("private_msg", function ( from, message )
     minetest.chat_send_player(player_to, "PRIVATE: "..text);
 end);
 
-irc.register_callback("kick", function ( chaninfo, to, from )
-    minetest.chat_send_all("IRC: Bot was kicked by "..from..". Reconnecting bot in 5 seconds...");
-    mt_irc.got_motd = false;
-    mt_irc.connect_ok = false;
-    irc.quit("Kicked");
-    minetest.after(5, mt_irc.connect);
+irc.register_callback("kick", function(chaninfo, nick, kicker)
+    if nick == mt_irc.server_nick then
+        minetest.chat_send_all("IRC: Bot was kicked by "..kicker..".");
+        mt_irc.got_motd = false;
+        mt_irc.connect_ok = false;
+        irc.quit("Kicked");
+    end
 end);
 
 irc.register_callback("nick_change", function ( from, old_nick )
