@@ -30,82 +30,82 @@ local irc = require 'irc';
 irc.DEBUG = ((mt_irc.debug and true) or false);
 
 minetest.register_privilege("irc_admin", {
-    description = "Allow IRC administrative tasks to be performed.";
-    give_to_singleplayer = true;
+	description = "Allow IRC administrative tasks to be performed.";
+	give_to_singleplayer = true;
 });
 
 minetest.register_globalstep(function(dtime)
-    if (not mt_irc.connect_ok) then return end
-    mt_irc.cur_time = mt_irc.cur_time + dtime
-    if (mt_irc.cur_time >= mt_irc.dtime) then
-        if (mt_irc.buffered_messages) then
-            for _, msg in ipairs(mt_irc.buffered_messages) do
-                local t = {
-                    name=(msg.name or "<BUG:no one is saying this>"),
-                    message=(msg.message or "<BUG:there is no message>")
-                }
-                local text = mt_irc.message_format_out:expandvars(t)
-                irc.say(mt_irc.channel, text)
-            end
-            mt_irc.buffered_messages = nil
-        end
-        irc.poll()
-        mt_irc.cur_time = mt_irc.cur_time - mt_irc.dtime
-    end
+	if (not mt_irc.connect_ok) then return end
+	mt_irc.cur_time = mt_irc.cur_time + dtime
+	if (mt_irc.cur_time >= mt_irc.dtime) then
+		if (mt_irc.buffered_messages) then
+			for _, msg in ipairs(mt_irc.buffered_messages) do
+				local t = {
+					name=(msg.name or "<BUG:no one is saying this>"),
+					message=(msg.message or "<BUG:there is no message>")
+				}
+				local text = mt_irc.message_format_out:expandvars(t)
+				irc.say(mt_irc.channel, text)
+			end
+			mt_irc.buffered_messages = nil
+		end
+		irc.poll()
+		mt_irc.cur_time = mt_irc.cur_time - mt_irc.dtime
+	end
 end)
 
 mt_irc.part = function ( name )
-    if (not mt_irc.connected_players[name]) then
-        minetest.chat_send_player(name, "IRC: You are not in the channel.");
-        return;
-    end
-    mt_irc.connected_players[name] = nil;
-    minetest.chat_send_player(name, "IRC: You are now out of the channel.");
+	if (not mt_irc.connected_players[name]) then
+		minetest.chat_send_player(name, "IRC: You are not in the channel.");
+		return;
+	end
+	mt_irc.connected_players[name] = nil;
+	minetest.chat_send_player(name, "IRC: You are now out of the channel.");
 end
 
 mt_irc.join = function ( name )
-    if (mt_irc.connected_players[name]) then
-        minetest.chat_send_player(name, "IRC: You are already in the channel.");
-        return;
-    end
-    mt_irc.connected_players[name] = true;
-    minetest.chat_send_player(name, "IRC: You are now in the channel.");
+	if (mt_irc.connected_players[name]) then
+		minetest.chat_send_player(name, "IRC: You are already in the channel.");
+		return;
+	end
+	mt_irc.connected_players[name] = true;
+	minetest.chat_send_player(name, "IRC: You are now in the channel.");
 end
 
 mt_irc.connect = function ( )
-    mt_irc.connect_ok = irc.connect({
-        network = mt_irc.server;
-        port = mt_irc.port;
-        nick = mt_irc.server_nick;
-        pass = mt_irc.password;
-        timeout = mt_irc.timeout;
-        channel = mt_irc.channel;
-    });
-    if (not mt_irc.connect_ok) then
-        local s = "DEBUG: irc.connect failed";
-        minetest.debug(s);
-        minetest.chat_send_all(s);
-        return;
-    end
-    while (not mt_irc.got_motd) do
-        irc.poll();
-    end
+	mt_irc.connect_ok = irc.connect({
+		network = mt_irc.server;
+		port = mt_irc.port;
+		nick = mt_irc.server_nick;
+		pass = mt_irc.password;
+		timeout = mt_irc.timeout;
+		channel = mt_irc.channel;
+	});
+	if (not mt_irc.connect_ok) then
+		local s = "DEBUG: irc.connect failed";
+		minetest.debug(s);
+		minetest.chat_send_all(s);
+		return;
+	end
+	while (not mt_irc.got_motd) do
+		irc.poll();
+	end
 end
 
 mt_irc.say = function ( to, msg )
-    if (not msg) then
-        msg = to;
-        to = mt_irc.channel;
-    end
-    to = to or mt_irc.channel;
-    msg = msg or "";
-    local msg2 = mt_irc._callback("msg_out", true, to, msg);
-    if ((type(msg2) == "boolean") and (not msg2)) then
-        return;
-    elseif (msg2 ~= nil) then
-        msg = tostring(msg);
-    end
-    irc.say(to, msg);
+	if (not msg) then
+		msg = to;
+		to = mt_irc.channel;
+	end
+	to = to or mt_irc.channel;
+	msg = msg or "";
+	local msg2 = mt_irc._callback("msg_out", true, to, msg);
+	if ((type(msg2) == "boolean") and (not msg2)) then
+		return;
+	elseif (msg2 ~= nil) then
+		msg = tostring(msg);
+	end
+	irc.say(to, msg);
 end
 
 mt_irc.irc = irc;
@@ -114,7 +114,7 @@ mt_irc.irc = irc;
 
 -- Requested by Exio
 string.expandvars = function ( s, vars )
-    return s:gsub("%$%(([^)]+)%)", vars);
+	return s:gsub("%$%(([^)]+)%)", vars);
 end
 
 dofile(MODPATH.."/callback.lua");
@@ -123,5 +123,5 @@ dofile(MODPATH.."/botcmds.lua");
 dofile(MODPATH.."/friends.lua");
 
 if (mt_irc.auto_connect) then
-    mt_irc.connect()
+	mt_irc.connect()
 end

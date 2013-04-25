@@ -61,12 +61,12 @@ mt_irc.auto_connect = not minetest.setting_getbool("mt_irc.disable_auto_connect"
 
 -- Set default server nick if not specified.
 if (not mt_irc.server_nick) then
-    local pr = PseudoRandom(os.time());
-    -- Workaround for bad distribution in minetest PRNG implementation.
-    local fmt = "minetest-%02X%02X%02X";
-    mt_irc.server_nick = fmt:format(
-        pr:next(0, 255),
-        pr:next(0, 255),
-        pr:next(0, 255)
-    );
+	local pr = PseudoRandom(os.time());
+	-- Workaround for bad distribution in minetest PRNG implementation.
+	local fmt = "minetest-%02X%02X%02X";
+	mt_irc.server_nick = fmt:format(
+		pr:next(0, 255),
+		pr:next(0, 255),
+		pr:next(0, 255)
+	);
 end
