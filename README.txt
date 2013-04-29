@@ -17,75 +17,78 @@ Make sure you have CMake (http://cmake.org/), and of course, a C compiler,
 For Windows, try MinGW32 (http://mingw.org/).
 For Unix-based systems, you should not have any problems with the C compiler
  since there's one (almost) always available. Puppy Linux users of course
- need a separate `devx.sfs' (from the same place where you got the Puppy
- ISO), since vanilla Puppy does not come with `gcc'. See your Puppy docs for
+ need a separate 'devx.sfs' (from the same place where you got the Puppy
+ ISO), since vanilla Puppy does not come with 'gcc'. See your Puppy docs for
  more info about how to install additional SFS files.
 
 Quick one line build for linux.  
 
-git clone https://github.com/kaeza/minetest-irc.git && cd minetest-irc && mkdir build && cd build && cmake .. && make && make pack_mod && cp -R irc <your mod directory>
-Please change the "cp -R irc" to fit your install of minetest.
+git clone https://github.com/kaeza/minetest-irc.git && cd minetest-irc && git submodule update --init && ./quick_install.sh <mod directory>
+Please change <mod directory> to fit your install of minetest.
 
-To compile and "pack" the mod:
+To compile and pack the mod:
 
   - Open a command prompt/terminal and CD to the minetest-irc directory.
-  - Create a directory named "Build", and CD into it:
+  - (optional) Create a directory named "Build", and CD into it:
       mkdir Build
       cd Build
   - Run CMake to generate the build system (see your CMake docs for more
-     information about command line options, in particular the `-G' option).
-      cmake ..
+     information about command line options, in particular the '-G' option).
+      cmake . (cmake .. if you made a seperate build directory)
   - Use the build tool for the generated build system to compile the
      native library. For example, if using Microsoft Visual Studio, open
      the generated workspace and build from there. If using make, just run
      "make" from within the Build directory.
-  - Again use the build tool to invoke the `pack_mod' target. For example,
-     if using `make', run "make pack_mod" from within the build directory.
-     This will create an `irc' directory inside the build directory.
-     This `irc' directory will be ready to be deployed to your Minetest mods
-     directory.
+  - After building you will have a folder named 'irc' in your build folder.
+	 Move that to your mod folder.
 
 
 INSTALLING
 ----------
-Just put the created `irc' directory in any of the directories where
+Just put the created 'irc' directory in any of the directories where
  Minetest looks for mods. For more information, see:
     http://wiki.minetest.com/wiki/Installing_mods
 
 
 SETTINGS
 --------
-All settings are changed in the `config.lua' file. If any of these settings
- are either nil or false, the default value is used.
+All settings are changed in 'minetest.conf'. If any of these settings
+ are either not set or false, the default value is used.
 
-    mt_irc.server (string, default "irc.freenode.net")
+    irc.server (string, default "irc.freenode.net")
         This is the IRC server the mod connects to.
 
-    mt_irc.channel (string, default "##mt-irc-mod")
+    irc.channel (string, default "##mt-irc-mod")
         The IRC channel to join.
 
-    mt_irc.dtime (number, default 0.2)
-        This is the time in seconds between updates in the connection.
-        In order not to block the game, the mod must periodically "poll"
-        the connection to both send messages to, and receive messages
-        from the channel. A high value means slower connection to IRC,
-        but possibly better response from the game. A low value means
-        the mod "polls" the connection more often, but can make the
-        game hang. It allows fractional values.
+    irc.interval (number, default 2.0)
+        This prevents the server from flooding. It should be at
+        least 2.0 but can be higher. After four messages this much
+        time must pass between folowing messages.
 
-    mt_irc.timeout (number, default 60.0)
+    irc.timeout (number, default 60.0)
         Underlying socket timeout in seconds. This is the time before
         the system drops an idle connection.
 
-    mt_irc.server_nick (string, default "minetest-"..<server-id>)
+    irc.nick (string, default "minetest-"..<server-id>)
         Nickname used as "proxy" for the in-game chat. 
-        "<server-id>" is the server IP address packed as a 32 bit integer.
-        (Currently, it's just a random 32 bit number).
+        "<server-id>" is a random 32 bit number.
 
-    mt_irc.password (string, default "")
+    irc.password (string, default "")
         Password to use when connecting to the server.
 
-    mt_irc.message_format_out (string, default "<$(name)> $(message)")
+    irc.NSPass (string, default nil)
+        NickServ password. Don't use this if you use SASL authentication.
+
+    irc.SASLPass (string, default nil)
+        SASL password, same as nickserv password.
+        You should use this instead of NickServ authentication
+        if the server supports it.
+
+    irc.SASLUser (string, default irc.nick)
+        The SASL username. This should normaly be set to your main NickServ account name.
+
+    irc.format_out (string, default "<$(name)> $(message)")
         This specifies how to send the messages from in-game to IRC.
         The strings can contain "macros" (or variable substitutions), which
         are specified as "$(macro_name)".
@@ -102,7 +105,7 @@ All settings are changed in the `config.lua' file. If any of these settings
         ...will yield...
           "mtuser: Hello! $(xyz)"
 
-    mt_irc.message_format_in (string,
+    irc.format_in (string,
      default "<$(name)@IRC> $(message)")
         This specifies how the messages gotten from the IRC channel are
         displayed in-game.
@@ -115,19 +118,19 @@ All settings are changed in the `config.lua' file. If any of these settings
           $(port)       The IRC server port.
           $(channel)    The IRC channel.
         In the default configuration, this will yield:
-          <mtuser@IRC[#minetest-irc-testing]> Hello!
+          <IRCUser@IRC> Hello!
 
-    mt_irc.debug (boolean, default false)
+    irc.debug (boolean, default false)
         Whether to output debug information.
 
-    mt_irc.auto_connect (boolean, default false)
-        If true, the bot is connected by default. If false, a player with
-         `irc_admin' privilege has to use the /irc_connect command to
+    irc.disable_auto_connect (boolean, default false)
+        If false, the bot is connected by default. If true, a player with
+         the 'irc_admin' privilege has to use the /irc_connect command to
          connect to the server.
 
-    mt_irc.auto_join (boolean, default false)
-        If true, players join the channel automatically upon entering the
-         game. If false, each user must manually use the /join command to
+    irc.disable_auto_join (boolean, default false)
+        If false, players join the channel automatically upon entering the
+         game. If true, each user must manually use the /join command to
          join the channel. In any case, the players may use the /part
          command to opt-out of being in the channel.
 
@@ -140,8 +143,8 @@ Once the game is connected to the IRC channel, chatting using the 'T' or
 
 This mod also adds a few chat commands:
 
-    /msg <nick> <message>
-        Sends a private message to the IRC user whose nickname is `nick'.
+    /irc_msg <nick> <message>
+        Sends a private message to a IRC user.
 
     /join
         Join the IRC channel.
@@ -153,21 +156,21 @@ This mod also adds a few chat commands:
         Connect the bot manually to the IRC network.
 
     /irc_disconnect
-        Disconnect the bot manually to the IRC network (this does not
+        Disconnect the bot manually from the IRC network (this does not
         shutdown the game).
 
     /irc_reconnect
-        A combination of /irc_disconnect and /irc_connect.
+        Equivilant to /irc_disconnect followed by /irc_connect.
 
 You can also send private messages from IRC to in-game players, though
  it's a bit tricky.
 
 To do it, you must send a private message to the bot (set with
- the `mt_irc.server_nick' option above), in the following format:
-    >playername message
-For example, if there's a player named `mtuser', you can send him/her
- a private message with:
-    /msg server_nick >mtuser Hello!
+ the 'irc.nick' option above), in the following format:
+    @playername message
+For example, if there's a player named 'mtuser', you can send him/her
+ a private message from IRC with:
+    /msg server_nick @mtuser Hello!
 
 To avoid possible misunderstandings (since all in-game players use the
  same IRC user to converse with you), the "proxy" user will reject any
@@ -175,8 +178,8 @@ To avoid possible misunderstandings (since all in-game players use the
  nice reminder as a private message.
 
 The bot also supports some basic commands, which are invoked by sending
- a private message to it. Use `!help' to get a list of commands, and
- `!help <command>' to get help about a specific command.
+ a private message to it. Use '!help' to get a list of commands, and
+ '!help <command>' to get help about a specific command.
 
 
 THANKS
@@ -184,10 +187,11 @@ THANKS
 I'd like to thank the users who supported this mod both on the Minetest
  Forums and on the #minetest channel. In no particular order:
 
-   Shaun/kizeren, RAPHAEL, DARGON, Calinou, Exio, vortexlabs/mrtux,
-    marveidemanis, marktraceur, jmf/john_minetest, sdzen/Muadtralk,
-    VanessaE, PilzAdam, sfan5, celeron55, KikaRz, OldCoder, RealBadAngel,
-    and all the people who commented in the forum topic. Thanks to you all!
+	0gb.us, ShadowNinja, Shaun/kizeren, RAPHAEL, DARGON, Calinou, Exio,
+	vortexlabs/mrtux, marveidemanis, marktraceur, jmf/john_minetest,
+	sdzen/Muadtralk, VanessaE, PilzAdam, sfan5, celeron55, KikaRz,
+	OldCoder, RealBadAngel, and all the people who commented in the
+	forum topic. Thanks to you all!
 
 
 LICENSE
@@ -202,15 +206,12 @@ LICENSE
  as the name is changed. 
 
             DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE 
-   TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION 
+   TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
-  0. You just DO WHAT THE FUCK YOU WANT TO. 
+	0. You just DO WHAT THE FUCK YOU WANT TO.
 
-The files `http.lua', `ltn12.lua', `mime.lua', `smtp.lua', `socket.lua',
- and `url.lua' are part of the luasocket project
- (http://luasocket.luaforge.org/). See `LICENSE-luasocket.txt' for
+The files 'http.lua', 'ltn12.lua', 'mime.lua', 'smtp.lua', 'socket.lua',
+ and 'url.lua' are part of the luasocket project
+ (http://luasocket.luaforge.org/). See 'src/luasocket/LICENSE.txt' for
  licensing information.
 
-The `irc.lua' file and the entire contents of the `irc' directory are part
- of the LuaIRC project (http://luairc.luaforge.org/). See
- `LICENSE-LuaIRC.txt' for licensing information.

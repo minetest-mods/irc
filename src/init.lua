@@ -1,127 +1,144 @@
+-- This file is licensed under the terms of the BSD 2-clause license.
+-- See LICENSE.txt for details.
 
--- IRC Mod for Minetest
--- By Diego Martínez <kaeza@users.sf.net>
---
--- This mod allows to tie a Minetest server to an IRC channel.
---
--- This program is free software. It comes without any warranty, to
--- the extent permitted by applicable law. You can redistribute it
--- and/or modify it under the terms of the Do What The Fuck You Want
--- To Public License, Version 2, as published by Sam Hocevar. See
--- http://sam.zoy.org/wtfpl/COPYING for more details.
---
 
-local MODPATH = minetest.get_modpath("irc");
+mt_irc = {
+	connected = false,
+	cur_time = 0,
+	message_buffer = {},
+	recent_message_count = 0,
+	joined_players = {},
+	modpath = minetest.get_modpath("irc")
+}
 
-mt_irc = { };
+-- To find LuaIRC and LuaSocket
+package.path = mt_irc.modpath.."/?/init.lua;"
+		..mt_irc.modpath.."/irc/?.lua;"
+		..mt_irc.modpath.."/?.lua;"
+		..package.path
+package.cpath = mt_irc.modpath.."/lib?.so;"
+		..mt_irc.modpath.."/?.dll;"
+		..package.cpath
 
-dofile(MODPATH.."/config.lua");
+local irc = require('irc')
 
-mt_irc.cur_time = 0;
-mt_irc.buffered_messages = { };
-mt_irc.connected_players = { };
-mt_irc.modpath = MODPATH;
-
-package.path = MODPATH.."/?.lua;"..package.path;
-package.cpath = MODPATH.."/lib?.so;"..MODPATH.."/?.dll;"..package.cpath;
-
-local irc = require 'irc';
-
-irc.DEBUG = ((mt_irc.debug and true) or false);
+dofile(mt_irc.modpath.."/config.lua")
+dofile(mt_irc.modpath.."/messages.lua")
+dofile(mt_irc.modpath.."/hooks.lua")
+dofile(mt_irc.modpath.."/callback.lua")
+dofile(mt_irc.modpath.."/chatcmds.lua")
+dofile(mt_irc.modpath.."/botcmds.lua")
+dofile(mt_irc.modpath.."/util.lua")
+if mt_irc.config.enable_player_part then
+	dofile(mt_irc.modpath.."/player_part.lua")
+else
+	setmetatable(mt_irc.joined_players, {__index = function(index) return true end})
+end
 
 minetest.register_privilege("irc_admin", {
-	description = "Allow IRC administrative tasks to be performed.";
-	give_to_singleplayer = true;
-});
+	description = "Allow IRC administrative tasks to be performed.",
+	give_to_singleplayer = true
+})
 
-minetest.register_globalstep(function(dtime)
-	if (not mt_irc.connect_ok) then return end
-	mt_irc.cur_time = mt_irc.cur_time + dtime
-	if (mt_irc.cur_time >= mt_irc.dtime) then
-		if (mt_irc.buffered_messages) then
-			for _, msg in ipairs(mt_irc.buffered_messages) do
-				local t = {
-					name=(msg.name or "<BUG:no one is saying this>"),
-					message=(msg.message or "<BUG:there is no message>")
-				}
-				local text = mt_irc.message_format_out:expandvars(t)
-				irc.say(mt_irc.channel, text)
-			end
-			mt_irc.buffered_messages = nil
+
+minetest.register_globalstep(function(dtime) return mt_irc:step(dtime) end)
+
+function mt_irc:step(dtime)
+	if not self.connected then return end
+
+	-- Tick down the recent message count
+	self.cur_time = self.cur_time + dtime
+	if self.cur_time >= self.config.interval then
+		if self.recent_message_count > 0 then
+			self.recent_message_count = self.recent_message_count - 1
 		end
-		irc.poll()
-		mt_irc.cur_time = mt_irc.cur_time - mt_irc.dtime
+		self.cur_time = self.cur_time - self.config.interval
 	end
-end)
 
-mt_irc.part = function ( name )
-	if (not mt_irc.connected_players[name]) then
-		minetest.chat_send_player(name, "IRC: You are not in the channel.");
-		return;
+	-- Hooks will manage incoming messages and errors
+	if not pcall(function() mt_irc.conn:think() end) then
+		return
 	end
-	mt_irc.connected_players[name] = nil;
-	minetest.chat_send_player(name, "IRC: You are now out of the channel.");
-end
 
-mt_irc.join = function ( name )
-	if (mt_irc.connected_players[name]) then
-		minetest.chat_send_player(name, "IRC: You are already in the channel.");
-		return;
-	end
-	mt_irc.connected_players[name] = true;
-	minetest.chat_send_player(name, "IRC: You are now in the channel.");
-end
-
-mt_irc.connect = function ( )
-	mt_irc.connect_ok = irc.connect({
-		network = mt_irc.server;
-		port = mt_irc.port;
-		nick = mt_irc.server_nick;
-		pass = mt_irc.password;
-		timeout = mt_irc.timeout;
-		channel = mt_irc.channel;
-	});
-	if (not mt_irc.connect_ok) then
-		local s = "DEBUG: irc.connect failed";
-		minetest.debug(s);
-		minetest.chat_send_all(s);
-		return;
-	end
-	while (not mt_irc.got_motd) do
-		irc.poll();
+	-- Send messages in the buffer
+	if #self.message_buffer > 10 then
+		minetest.log("error", "IRC: Message buffer overflow, clearing.")
+		self.message_buffer = {}
+	elseif #self.message_buffer > 0 then
+		for i=1, #self.message_buffer do
+			if self.recent_message_count > 4 then break end
+			self.recent_message_count = self.recent_message_count + 1
+			local msg = table.remove(self.message_buffer, 1) --Pop the first message
+			self:send(msg)
+		end
 	end
 end
 
-mt_irc.say = function ( to, msg )
-	if (not msg) then
-		msg = to;
-		to = mt_irc.channel;
+
+function mt_irc:connect()
+	if self.connected then
+		minetest.log("error", "IRC: Ignoring attempt to connect when already connected.")
+		return
 	end
-	to = to or mt_irc.channel;
-	msg = msg or "";
-	local msg2 = mt_irc._callback("msg_out", true, to, msg);
-	if ((type(msg2) == "boolean") and (not msg2)) then
-		return;
-	elseif (msg2 ~= nil) then
-		msg = tostring(msg);
+	self.conn = irc.new({
+		nick = self.config.nick,
+		username = "Minetest",
+		realname = "Minetest",
+	})
+	self:doHook(self.conn)
+	good, message = pcall(function()
+		mt_irc.conn:connect({
+			host = mt_irc.config.server,
+			port = mt_irc.config.port,
+			pass = mt_irc.config.password,
+			timeout = mt_irc.config.timeout,
+			secure = mt_irc.config.secure
+		})
+	end)
+
+	if not good then
+		minetest.log("error", ("IRC: Connection error: %s: %s -- Reconnecting in ten minutes...")
+					:format(self.config.server, message))
+		minetest.after(600, function() mt_irc:connect() end)
+		return
 	end
-	irc.say(to, msg);
+
+	if self.config.NSPass then
+		self:say("NickServ", "IDENTIFY "..self.config.NSPass)
+	end
+
+	self.conn:join(self.config.channel, self.config.key)
+	self.connected = true
+	minetest.log("action", "IRC: Connected!")
+	minetest.chat_send_all("IRC: Connected!")
 end
 
-mt_irc.irc = irc;
 
--- Misc helpers
-
--- Requested by Exio
-string.expandvars = function ( s, vars )
-	return s:gsub("%$%(([^)]+)%)", vars);
+function mt_irc:disconnect(message)
+	if self.connected then
+		--The OnDisconnect hook will clear self.connected and print a disconnect message
+		self.conn:disconnect(message)
+	end
 end
 
-dofile(MODPATH.."/callback.lua");
-dofile(MODPATH.."/chatcmds.lua");
-dofile(MODPATH.."/botcmds.lua");
-dofile(MODPATH.."/friends.lua");
 
-if (mt_irc.auto_connect) then
-	mt_irc.connect()
+function mt_irc:say(to, message)
+	if not message then
+		message = to
+		to = self.config.channel
+	end
+	to = to or self.config.channel
+
+	self:queueMsg(self.msgs.privmsg(to, message))
 end
+
+
+function mt_irc:send(line)
+	self.conn:send(line)
+end
+
+
+if mt_irc.config.auto_connect then
+	mt_irc:connect()
+end
+

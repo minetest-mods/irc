@@ -1,124 +1,104 @@
+-- This file is licensed under the terms of the BSD 2-clause license.
+-- See LICENSE.txt for details.
 
--- IRC Mod for Minetest
--- By Diego Martínez <kaeza@users.sf.net>
---
--- This mod allows to tie a Minetest server to an IRC channel.
---
--- This program is free software. It comes without any warranty, to
--- the extent permitted by applicable law. You can redistribute it
--- and/or modify it under the terms of the Do What The Fuck You Want
--- To Public License, Version 2, as published by Sam Hocevar. See
--- http://sam.zoy.org/wtfpl/COPYING for more details.
---
+-- Note: This file does NOT conatin every chat command, only general ones.
+-- Feature-specific commands (like /join) are in their own files.
 
-local irc = require("irc");
 
 minetest.register_chatcommand("irc_msg", {
-	params = "<name> <message>";
-	description = "Send a private message to an IRC user";
-	privs = { shout=true; };
-	func = function ( name, param )
-		if (not mt_irc.connect_ok) then
-			minetest.chat_send_player(name, "IRC: You are not connected, use /irc_connect.");
-			return;
-		end
-		local found, _, toname, msg = param:find("^([^%s#]+)%s(.+)");
-		if not found then
-			minetest.chat_send_player(name, "Invalid usage, see /help irc_msg.");
-			return;
-		end
-		local t = {name=name, message=msg};
-		local text = mt_irc.message_format_out:expandvars(t);
-		mt_irc.say(toname, text);
-		minetest.chat_send_player(name, "Message sent!")
-	end;
-});
-
-minetest.register_chatcommand("irc_connect", {
-	params = "";
-	description = "Connect to the IRC server";
-	privs = { irc_admin=true; };
-	func = function ( name, param )
-		if (mt_irc.connect_ok) then
-			minetest.chat_send_player(name, "IRC: You are already connected.");
-			return;
-		end
-		mt_irc.connect();
-		minetest.chat_send_player(name, "IRC: You are now connected.");
-		irc.say(mt_irc.channel, name.." joined the channel.");
-	end;
-});
-
-minetest.register_chatcommand("irc_disconnect", {
-	params = "";
-	description = "Disconnect from the IRC server";
-	privs = { irc_admin=true; };
-	func = function ( name, param )
-		if (not mt_irc.connect_ok) then
-			minetest.chat_send_player(name, "IRC: You are not connected.");
-			return;
-		end
-		irc.quit("Manual BOT Disconnection");
-		minetest.chat_send_player(name, "IRC: You are now disconnected.");
-		mt_irc.connect_ok = false;
-	end;
-});
-
-minetest.register_chatcommand("irc_reconnect", {
-	params = "";
-	description = "Reconnect to the IRC server";
-	privs = { irc_admin=true; };
-	func = function ( name, param )
-		if (mt_irc.connect_ok) then
-			irc.quit("Reconnecting BOT...");
-			minetest.chat_send_player(name, "IRC: Reconnecting bot...");
-			mt_irc.got_motd = true;
-			mt_irc.connect_ok = false;
-		end
-		mt_irc.connect();
-	end;
-});
-
-minetest.register_chatcommand("join", {
-	params = "";
-	description = "Join the IRC channel";
-	privs = { shout=true; };
-	func = function ( name, param )
-		mt_irc.join(name);
-	end;
-});
-
-minetest.register_chatcommand("part", {
-	params = "";
-	description = "Part the IRC channel";
-	privs = { shout=true; };
-	func = function ( name, param )
-		mt_irc.part(name);
-	end;
-});
-
-minetest.register_chatcommand("me", {
-	params = "<action>";
-	description = "chat action (eg. /me orders a pizza)";
-	privs = { shout=true };
+	params = "<name> <message>",
+	description = "Send a private message to an IRC user",
+	privs = {shout=true},
 	func = function(name, param)
-		minetest.chat_send_all("* "..name.." "..param);
-		irc.say(mt_irc.channel, "* "..name.." "..param);
-	end,
-})
-
-minetest.register_chatcommand("who", {
-	-- TODO: This duplicates code from !who
-	params = "";
-	description = "Tell who is currently on the channel";
-	privs = { shout=true; };
-	func = function ( name, param )
-		local s = "";
-		for k, v in pairs(mt_irc.connected_players) do
-			if (v) then
-				s = s.." "..k;
+		if not mt_irc.connected then
+			minetest.chat_send_player(name, "Not connected to IRC. Use /irc_connect to connect.")
+			return
+		end
+		local found, _, toname, message = param:find("^([^%s]+)%s(.+)")
+		if not found then
+			minetest.chat_send_player(name, "Invalid usage, see /help irc_msg.")
+			return
+		end
+		local validNick = false
+		for nick, user in pairs(mt_irc.conn.channels[mt_irc.config.channel].users) do
+			if nick:lower() == toname:lower() then
+				validNick = true
+				break
 			end
 		end
-		minetest.chat_send_player(name, "Players On Channel:"..s);
-	end;
-});
+		if toname:find("Serv|Bot") then
+			validNick = false
+		end
+		if not validNick then
+			minetest.chat_send_player(name,
+				"You can not message that user. (Hint: They have to be in the channel)")
+			return
+		end
+		mt_irc:queueMsg(mt_irc.msgs.playerMessage(toname, name, message))
+		minetest.chat_send_player(name, "Message sent!")
+	end
+})
+
+
+minetest.register_chatcommand("irc_connect", {
+	description = "Connect to the IRC server.",
+	privs = {irc_admin=true},
+	func = function(name, param)
+		if mt_irc.connected then
+			minetest.chat_send_player(name, "You are already connected to IRC.")
+			return
+		end
+		minetest.chat_send_player(name, "IRC: Connecting...")
+		mt_irc:connect()
+	end
+})
+
+
+minetest.register_chatcommand("irc_disconnect", {
+	description = "Disconnect from the IRC server.",
+	privs = {irc_admin=true},
+	func = function(name, param)
+		if not mt_irc.connected then
+			minetest.chat_send_player(name, "You are not connected to IRC.")
+			return
+		end
+		mt_irc:disconnect("Manual disconnect.")
+	end
+})
+
+
+minetest.register_chatcommand("irc_reconnect", {
+	description = "Reconnect to the IRC server.",
+	privs = {irc_admin=true},
+	func = function(name, param)
+		if not mt_irc.connected then
+			minetest.chat_send_player(name, "You are not connected to IRC.")
+			return
+		end
+		mt_irc:disconnect("Reconnecting...")
+		mt_irc:connect()
+	end
+})
+
+
+minetest.register_chatcommand("irc_quote", {
+	params = "<command>",
+	description = "Send a raw command to the IRC server.",
+	privs = {irc_admin=true},
+	func = function(name, param)
+		if not mt_irc.connected then
+			minetest.chat_send_player(name, "You are not connected to IRC.")
+			return
+		end
+		mt_irc:queueMsg(param)
+		minetest.chat_send_player(name, "Command sent!")
+	end
+})
+
+
+local oldme = minetest.chatcommands["me"].func
+minetest.chatcommands["me"].func = function(name, param)
+	oldme(name, param)
+	mt_irc:say(("* %s %s"):format(name, param))
+end
+
