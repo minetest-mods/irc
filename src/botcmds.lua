@@ -1,91 +1,106 @@
+mt_irc.bot_commands = {}
 
-mt_irc.bot_commands = { };
 
-mt_irc.bot_help = function ( from, cmdname )
-	local cmd = mt_irc.bot_commands[cmdname];
-	if (not cmd) then
-		irc.say(from, "Unknown command `"..cmdname.."'");
-		return;
+function mt_irc:bot_command(user, message)
+	local pos = message:find(" ", 1, true)
+	local cmd, args
+	if pos then
+		cmd = message:sub(1, pos - 1)
+		args = message:sub(pos + 1)
+	else
+		cmd = message
+		args = ""
 	end
-	local usage = "Usage: !"..cmdname;
-	if (cmd.params) then usage = usage.." "..cmd.params; end
-	irc.say(from, usage);
-	if (cmd.description) then irc.say(from, "	"..cmd.description); end
+ 
+	if not self.bot_commands[cmd] then
+		self:say(user.nick, "Unknown command '"..cmd.."'. Try `!help'."
+			.." Or use @playername <message> to send a private message")
+		return
+	end
+ 
+	self.bot_commands[cmd].func(user, args)
 end
 
-mt_irc.register_bot_command = function ( name, def )
-	if ((not def.func) or (type(def.func) ~= "function")) then
-		error("Wrong bot command definition", 2);
+
+function mt_irc:register_bot_command(name, def)
+	if (not def.func) or (type(def.func) ~= "function") then
+		error("Erroneous bot command definition. def.func missing.", 2)
 	end
-	mt_irc.bot_commands[name] = def;
+	self.bot_commands[name] = def
 end
 
-mt_irc.register_bot_command("help", {
-	params = "[<command>]";
-	description = "Get help about a command";
-	func = function ( from, args )
-		if (args ~= "") then
-			mt_irc.bot_help(from, args);
-		else
-			local cmdlist = "Available commands:";
-			for name,cmd in pairs(mt_irc.bot_commands) do
-				cmdlist = cmdlist.." "..name;
-			end
-			irc.say(from, cmdlist);
-			irc.say(from, "Use `!help <command name>' to get help about a specific command.");
-		end
-	end;
-});
 
-mt_irc.register_bot_command("who", {
-	params = nil;
-	description = "Tell who is playing";
-	func = function ( from, args )
-		local s = "";
-		for k, v in pairs(mt_irc.connected_players) do
-			if (v) then
-				s = s.." "..k;
-			end
+mt_irc:register_bot_command("help", {
+	params = "<command>",
+	description = "Get help about a command",
+	func = function(user, args)
+		if args == "" then
+			mt_irc:say(user.nick, "No command name specified. Use 'list' for a list of cammands")
+			return
 		end
-		irc.say(from, "Players On Channel:"..s);
-	end;
-});
 
-mt_irc.register_bot_command("whereis", {
-	params = "<player>";
-	description = "Tell the location of <player>";
-	func = function ( from, args )
-		if (args == "") then
-			mt_irc.bot_help(from, "whereis");
-			return;
+		local cmd = mt_irc.bot_commands[args]
+		if not cmd then
+			mt_irc:say(user.nick, "Unknown command '"..cmdname.."'.")
+			return
 		end
-		local list = minetest.env:get_objects_inside_radius({x=0,y=0,z=0}, 100000);
-		for _, obj in ipairs(list) do
-			if (obj:is_player() and (obj:get_player_name() == args)) then
-				local fmt = "Player %s is at (%.2f,%.2f,%.2f)";
-				local pos = obj:getpos();
-				irc.say(from, fmt:format(args, pos.x, pos.y, pos.z));
-				return;
-			end
+
+		local usage = ("Usage: %c%s %s -- %s"):format(
+				mt_irc.config.command_prefix,
+				args,
+				cmd.params or "<no parameters>",
+				cmd.description or "<no description>")
+		mt_irc:say(user.nick, usage)		
+	end
+})
+
+
+mt_irc:register_bot_command("list", {
+	params = "",
+	description = "List available commands.",
+	func = function(user, args)
+		local cmdlist = "Available commands: "
+		for name, cmd in pairs(mt_irc.bot_commands) do
+			cmdlist = cmdlist..name..", "
 		end
-		irc.say(from, "There's No player named `"..args.."'");
-	end;
-});
+		mt_irc:say(user.nick, cmdlist
+			.." -- Use 'help <command name>' to get help about a specific command.")
+	end
+})
 
-local starttime = os.time();
 
-mt_irc.register_bot_command("uptime", {
-	params = "";
-	description = "Tell how much time the server has been up";
-	privs = { shout=true; };
-	func = function ( name, param )
-		local t = os.time();
-		local diff = os.difftime(t, starttime);
-		local fmt = "Server has been running for %d:%02d:%02d";
-		irc.say(name, fmt:format(
+mt_irc:register_bot_command("whereis", {
+	params = "<player>",
+	description = "Tell the location of <player>",
+	func = function(user, args)
+		if args == "" then
+			mt_irc:bot_help(user, "whereis")
+			return
+		end
+		local player = minetest.env:get_player_by_name(args)
+		if player then
+			local fmt = "Player %s is at (%.2f,%.2f,%.2f)"
+			local pos = player:getpos()
+			mt_irc:say(user.nick, fmt:format(args, pos.x, pos.y, pos.z))
+			return
+		end
+		mt_irc:say(user.nick, "There is No player named '"..args.."'")
+	end
+})
+
+
+local starttime = os.time()
+mt_irc:register_bot_command("uptime", {
+	description = "Tell how much time the server has been up",
+	func = function(user, args)
+		local cur_time = os.time()
+		local diff = os.difftime(cur_time, starttime)
+		local fmt = "Server has been running for %d:%02d:%02d"
+		mt_irc:say(user.nick, fmt:format(
 			math.floor(diff / 60 / 60),
 			math.mod(math.floor(diff / 60), 60),
 			math.mod(math.floor(diff), 60)
-		));
-	end;
-});
+		))
+	end
+})
+

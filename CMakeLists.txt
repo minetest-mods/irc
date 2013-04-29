@@ -1,11 +1,11 @@
 
-# :mode=cmake:noTabs=true:tabSize=4:
+# :mode=cmake:
 
 cmake_minimum_required(VERSION 2.8)
 
 project(MINETEST_IRC C)
 
-set(MINETEST_IRC_VERSION 0.1.0)
+set(MINETEST_IRC_VERSION 0.2.0)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
@@ -105,14 +105,12 @@ else()
 	set(lib "${CMAKE_CURRENT_BINARY_DIR}/libluasocket.so")
 endif()
 
-add_custom_target(pack_mod
+add_custom_target(pack_mod ALL
 	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 
 	# LuaIRC
 	COMMAND ${CMAKE_COMMAND} -E make_directory ${dir}
-	COMMAND ${CMAKE_COMMAND} -E copy src/luairc/irc.lua ${dir}
-	COMMAND ${CMAKE_COMMAND} -E copy_directory src/luairc/irc ${dir}/irc
-	COMMAND ${CMAKE_COMMAND} -E copy doc/LICENSE-LuaIRC.txt ${dir}
+	COMMAND ${CMAKE_COMMAND} -E copy_directory src/LuaIRC ${dir}/irc
 
 	# luasocket
 	COMMAND ${CMAKE_COMMAND} -E make_directory ${dir}
@@ -124,20 +122,22 @@ add_custom_target(pack_mod
 	COMMAND ${CMAKE_COMMAND} -E copy src/luasocket/socket.lua ${dir}
 	COMMAND ${CMAKE_COMMAND} -E copy src/luasocket/tp.lua ${dir}
 	COMMAND ${CMAKE_COMMAND} -E copy src/luasocket/url.lua ${dir}
-	COMMAND ${CMAKE_COMMAND} -E copy doc/LICENSE-luasocket.txt ${dir}
+	COMMAND ${CMAKE_COMMAND} -E copy src/luasocket/LICENSE.txt ${dir}
 	COMMAND ${CMAKE_COMMAND} -E copy ${lib} ${dir}
 
 	# IRC mod
 	COMMAND ${CMAKE_COMMAND} -E make_directory ${dir}
 	COMMAND ${CMAKE_COMMAND} -E copy src/init.lua ${dir}
+	COMMAND ${CMAKE_COMMAND} -E copy src/hooks.lua ${dir}
+	COMMAND ${CMAKE_COMMAND} -E copy src/messages.lua ${dir}
 	COMMAND ${CMAKE_COMMAND} -E copy src/config.lua ${dir}
 	COMMAND ${CMAKE_COMMAND} -E copy src/callback.lua ${dir}
-	COMMAND ${CMAKE_COMMAND} -E copy src/friends.lua ${dir}
 	COMMAND ${CMAKE_COMMAND} -E copy src/chatcmds.lua ${dir}
 	COMMAND ${CMAKE_COMMAND} -E copy src/botcmds.lua ${dir}
+	COMMAND ${CMAKE_COMMAND} -E copy src/player_part.lua ${dir}
+	COMMAND ${CMAKE_COMMAND} -E copy src/util.lua ${dir}
 	COMMAND ${CMAKE_COMMAND} -E copy README.txt ${dir}
-	COMMAND ${CMAKE_COMMAND} -E copy doc/API.txt ${dir}
-	COMMAND ${CMAKE_COMMAND} -E copy doc/LICENSE.txt ${dir}
-	COMMAND ${CMAKE_COMMAND} -E copy doc/CHANGES.txt ${dir}
-	COMMAND ${CMAKE_COMMAND} -E copy doc/TODO.txt ${dir}
+	COMMAND ${CMAKE_COMMAND} -E copy src/API.txt ${dir}
+	COMMAND ${CMAKE_COMMAND} -E copy src/LICENSE.txt ${dir}
 )
+
