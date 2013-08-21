@@ -1,5 +1,5 @@
 IRC Mod for Minetest
-(C) 2012 Diego Martínez <kaeza@users.sf.net>
+(C) 2012-2013 Diego Martínez <kaeza@users.sf.net>
 
 INTRODUCTION
 ------------
@@ -196,22 +196,16 @@ I'd like to thank the users who supported this mod both on the Minetest
 
 LICENSE
 -------
-            DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE 
-                    Version 2, December 2004 
 
- Copyright (C) 2004 Sam Hocevar <sam@hocevar.net> 
+See src/LICENSE.txt for licensing information.
 
- Everyone is permitted to copy and distribute verbatim or modified 
- copies of this license document, and changing it is allowed as long 
- as the name is changed. 
+The files in src/lua are part of the lua project.
+ See src/lua/LICENSE.txt for licensing information.
 
-            DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE 
-   TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
-
-	0. You just DO WHAT THE FUCK YOU WANT TO.
-
-The files 'http.lua', 'ltn12.lua', 'mime.lua', 'smtp.lua', 'socket.lua',
- and 'url.lua' are part of the luasocket project
+The files in src/luasocket are part of the luasocket project
  (http://luasocket.luaforge.org/). See 'src/luasocket/LICENSE.txt' for
  licensing information.
+
+The files in src/LuaIRC are part of the LuaIRC project.
+ See src/LuaIRC/LICENSE.txt for licensing information.
 
