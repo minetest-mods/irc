@@ -55,16 +55,34 @@ end
 
 
 function mt_irc.hooks.channelChat(user, channel, message)
-	local t = {
-		access=user.access,
-		name=user.nick,
-		message=message,
-		server=mt_irc.conn.host,
-		port=mt_irc.conn.port,
-		channel=channel
-	}
-	local text = mt_irc.config.format_in:expandvars(t)
-	mt_irc:sendLocal(text)
+	-- Support multiple servers in a channel better by converting:
+	-- "<server@IRC> <player> message" into "<player@server> message"
+	-- "<server@IRC> *** player joined/left the game" into "*** player@server joined/left the game"
+	-- and "<server@IRC> * player orders a pizza" into "* player@server orders a pizza"
+	local foundchat, _, chatnick, chatmessage
+		= message:find("^<([^>]+)> (.*)$")
+	local foundjoin, _, joinnick
+		= message:find("^%*%*%* ([^%s]+) joined the game$")
+	local foundleave, _, leavenick
+		= message:find("^%*%*%* ([^%s]+) left the game$")
+	local foundaction, _, actionnick, actionmessage
+		= message:find("^%* ([^%s]+) (.*)$")
+
+	if foundchat then
+		mt_irc:sendLocal(("<%s@%s> %s")
+				:format(chatnick, user.nick, chatmessage))
+	elseif foundjoin then
+		mt_irc:sendLocal(("*** %s@%s joined the game")
+				:format(joinnick, user.nick))
+	elseif foundleave then
+		mt_irc:sendLocal(("*** %s@%s left the game")
+				:format(leavenick, user.nick))
+	elseif foundaction then
+		mt_irc:sendLocal(("* %s@%s %s")
+				:format(actionnick, user.nick, actionmessage))
+	else
+		mt_irc:sendLocal(("<%s@IRC> %s"):format(user.nick, message))
+	end
 end
 
 
@@ -80,15 +98,8 @@ function mt_irc.hooks.pm(user, message)
 			mt_irc:say(user.nick, "User '"..player_to.."' is not in the game.")
 			return
 		end
-		local t = {
-			name=user.nick,
-			message=message,
-			server=mt_irc.server,
-			port=mt_irc.port,
-			channel=mt_irc.channel
-		}
-		local text = mt_irc.config.format_in:expandvars(t)
-		minetest.chat_send_player(player_to, "PM: "..text, false)
+		minetest.chat_send_player(player_to,
+				"PM from "..user.nick.."@IRC: "..message, false)
 		mt_irc:say(user.nick, "Message sent!")
 	elseif message:sub(1, 1) == "!" then
 		mt_irc:bot_command(user, message:sub(2))

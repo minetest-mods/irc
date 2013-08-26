@@ -54,14 +54,6 @@ config.timeout = tonumber(minetest.setting_get("irc.timeout")) or 60.0
 config.command_prefix = minetest.setting_get("irc.command_prefix") or '!'
 config.command_prefix = config.command_prefix:sub(1, 1)
 
--- The format of messages sent to IRC server (string, default "<$(name)> $(message)")
--- See `README.txt' for the macros supported here.
-config.format_out = minetest.setting_get("irc.format_out") or "<$(name)> $(message)"
-
--- The format of messages sent to IRC server (string, default "<$(name)@IRC> $(message)")
--- See `README.txt' for the macros supported here.
-config.format_in = minetest.setting_get("irc.format_in") or "<$(name)@IRC> $(message)"
-
 -- Enable debug output (boolean, default false)
 config.debug = minetest.setting_getbool("irc.debug")
 

@@ -88,38 +88,6 @@ All settings are changed in 'minetest.conf'. If any of these settings
     irc.SASLUser (string, default irc.nick)
         The SASL username. This should normaly be set to your main NickServ account name.
 
-    irc.format_out (string, default "<$(name)> $(message)")
-        This specifies how to send the messages from in-game to IRC.
-        The strings can contain "macros" (or variable substitutions), which
-        are specified as "$(macro_name)".
-        Currently, these macros are supported:
-          $(name)       The name of the player sending the message.
-          $(message)    The actual message text.
-        Any unrecognized macro will be left in the message verbatim.
-        For example, if a user named "mtuser" is saying "Hello!", then:
-          "<$(name)> $(message)"
-        ...will yield...
-          "<mtuser> Hello!"
-        ...and...
-          "$(name): $(message) $(xyz)"
-        ...will yield...
-          "mtuser: Hello! $(xyz)"
-
-    irc.format_in (string,
-     default "<$(name)@IRC> $(message)")
-        This specifies how the messages gotten from the IRC channel are
-        displayed in-game.
-        The strings can contain "macros" (or variable substitutions), which
-        are specified as "$(macro_name)".
-        Currently, these macros are supported:
-          $(name)       The nickname of the user sending the message.
-          $(message)    The actual message text.
-          $(server)     The IRC server.
-          $(port)       The IRC server port.
-          $(channel)    The IRC channel.
-        In the default configuration, this will yield:
-          <IRCUser@IRC> Hello!
-
     irc.debug (boolean, default false)
         Whether to output debug information.
 

@@ -32,9 +32,8 @@ function mt_irc.msgs.action(to, message)
 end
 
 function mt_irc.msgs.playerMessage(to, name, message)
-	local t = {name=name, message=message}
-	local text = mt_irc.config.format_out:expandvars(t)
-	return mt_irc.msgs.privmsg(to, text)
+	return mt_irc.msgs.privmsg(to, ("<%s> %s"):format(name, message))
 end
+
 -- TODO Add more message types
---
+

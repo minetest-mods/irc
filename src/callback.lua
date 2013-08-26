@@ -25,7 +25,8 @@ minetest.register_on_chat_message(function(name, message)
 	   or (not minetest.check_player_privs(name, {shout=true})) then
 		return
 	end
-	mt_irc:queueMsg(mt_irc.msgs.playerMessage(mt_irc.config.channel, name, message))
+	mt_irc:queueMsg(mt_irc.msgs.playerMessage(
+			mt_irc.config.channel, name, message))
 end)
 
 
