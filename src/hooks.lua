@@ -181,7 +181,7 @@ function mt_irc.hooks.disconnect(message, isError)
 	if isError then
 		minetest.log("error",  "IRC: Error: Disconnected, reconnecting in one minute.")
 		minetest.chat_send_all("IRC: Error: Disconnected, reconnecting in one minute.")
-		minetest.after(60, mt_irc.connect)
+		minetest.after(60, mt_irc.connect, mt_irc)
 	else
 		minetest.log("action", "IRC: Disconnected.")
 		minetest.chat_send_all("IRC: Disconnected.")
