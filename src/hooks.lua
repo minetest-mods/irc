@@ -40,16 +40,36 @@ function mt_irc.hooks.chat(user, channel, message)
 	message = message:gsub('\2', '')
 	message = message:gsub('\31', '')
 	message = message:gsub('\3[0-9][0-9,]*', '')
+
+	if string.sub(message, 1, 1) == string.char(1) then
+		mt_irc.conn:invoke("OnCTCP", user, channel, message)
+		return
+	end
+
 	if channel == mt_irc.conn.nick then
 		mt_irc.conn:invoke("PrivateMessage", user, message)
 	else
-		local c = string.char(1)
-		local found, _, action = message:find(("^%sACTION ([^%s]*)%s$"):format(c, c, c))
-		if found then
-			mt_irc.conn:invoke("OnChannelAction", user, channel, action)
-		else
-			mt_irc.conn:invoke("OnChannelChat", user, channel, message)
-		end
+		mt_irc.conn:invoke("OnChannelChat", user, channel, message)
+	end
+end
+
+
+function mt_irc.hooks.ctcp(user, channel, message)
+	if message:sub(2, 7):upper() == "ACTION" and
+			channel ~= mt_irc.conn.nick then
+		local action = message:sub(9, -2)
+		mt_irc:sendLocal(("* %s@IRC %s"):format(user.nick, action))
+	elseif message:sub(2, 8):upper() == "VERSION" then
+		mt_irc:queueMsg(mt_irc.msgs.notice(user.nick,
+				("\1VERSION Minetest IRC mod %s\1")
+				:format(mt_irc.version)))
+	elseif message:sub(2, 5):upper() == "PING" then
+		local ts = message:sub(7, -2)
+		mt_irc:queueMsg(mt_irc.msgs.notice(user.nick,
+				("\1PING %s\1"):format(ts)))
+	elseif message:sub(2, 5):upper() == "TIME" then
+		mt_irc:queueMsg(mt_irc.msgs.notice(user.nick,
+				("\1TIME %s\1"):format(os.date())))
 	end
 end
 
@@ -170,12 +190,6 @@ function mt_irc.hooks.quit(user, reason)
 end
 
 
-function mt_irc.hooks.action(user, channel, message)
-	mt_irc:sendLocal(("* %s@IRC %s")
-			:format(user.nick, message))
-end
-
-
 function mt_irc.hooks.disconnect(message, isError)
 	mt_irc.connected = false
 	if isError then
@@ -213,7 +227,7 @@ mt_irc:register_hook("OnKick",          mt_irc.hooks.kick)
 mt_irc:register_hook("OnJoin",          mt_irc.hooks.join)
 mt_irc:register_hook("OnQuit",          mt_irc.hooks.quit)
 mt_irc:register_hook("NickChange",      mt_irc.hooks.nick)
-mt_irc:register_hook("OnChannelAction", mt_irc.hooks.action)
+mt_irc:register_hook("OnCTCP",          mt_irc.hooks.ctcp)
 mt_irc:register_hook("PrivateMessage",  mt_irc.hooks.pm)
 mt_irc:register_hook("OnNotice",        mt_irc.hooks.notice)
 mt_irc:register_hook("OnChannelChat",   mt_irc.hooks.channelChat)

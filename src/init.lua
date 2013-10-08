@@ -3,12 +3,13 @@
 
 
 mt_irc = {
+	version = "0.2.0",  -- Also update CMakeLists.txt
 	connected = false,
 	cur_time = 0,
 	message_buffer = {},
 	recent_message_count = 0,
 	joined_players = {},
-	modpath = minetest.get_modpath("irc")
+	modpath = minetest.get_modpath(minetest.get_current_modname()),
 }
 
 -- To find LuaIRC and LuaSocket

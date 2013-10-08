@@ -5,6 +5,7 @@ cmake_minimum_required(VERSION 2.8)
 
 project(MINETEST_IRC C)
 
+# Also update init.lua
 set(MINETEST_IRC_VERSION 0.2.0)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
