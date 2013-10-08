@@ -49,19 +49,6 @@ minetest.register_chatcommand("who", {
 	end
 })
 
-
- 
-mt_irc:register_bot_command("who", {
-	description = "Tell who is playing",
-	func = function(user, args)
-		local s = ""
-		for name, _ in pairs(mt_irc.joined_players) do
-			s = s.." "..name
-		end
-		mt_irc:say(user.nick, "Players On Channel:"..s)
-	end
-})
-
  
 minetest.register_on_joinplayer(function(player)
 	local name = player:get_player_name()

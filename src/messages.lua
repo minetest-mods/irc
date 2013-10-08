@@ -2,10 +2,8 @@
 -- See LICENSE.txt for details.
 
 
-if not mt_irc.sendLocal then
-	function mt_irc:sendLocal(message)
-		minetest.chat_send_all(message)
-	end
+function mt_irc:sendLocal(message)
+	minetest.chat_send_all(message)
 end
 
 function mt_irc:queueMsg(message)

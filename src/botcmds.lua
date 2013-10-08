@@ -104,3 +104,17 @@ mt_irc:register_bot_command("uptime", {
 	end
 })
 
+
+mt_irc:register_bot_command("players", {
+	description = "List the players on the server",
+	func = function(user, args)
+		local players = minetest.get_connected_players()
+		local names = {}
+		for _, player in pairs(players) do
+			table.insert(names, player:get_player_name())
+		end
+		mt_irc:say(user.nick, "Connected players: "
+				..table.concat(names))
+	end
+})
+
