@@ -57,7 +57,7 @@ function mt_irc:step(dtime)
 	end
 
 	-- Hooks will manage incoming messages and errors
-	if not pcall(function() mt_irc.conn:think() end) then
+	if not pcall(function() self.conn:think() end) then
 		return
 	end
 
@@ -88,19 +88,19 @@ function mt_irc:connect()
 	})
 	self:doHook(self.conn)
 	good, message = pcall(function()
-		mt_irc.conn:connect({
-			host = mt_irc.config.server,
-			port = mt_irc.config.port,
-			pass = mt_irc.config.password,
-			timeout = mt_irc.config.timeout,
-			secure = mt_irc.config.secure
+		self.conn:connect({
+			host = self.config.server,
+			port = self.config.port,
+			pass = self.config.password,
+			timeout = self.config.timeout,
+			secure = self.config.secure
 		})
 	end)
 
 	if not good then
 		minetest.log("error", ("IRC: Connection error: %s: %s -- Reconnecting in ten minutes...")
 					:format(self.config.server, message))
-		minetest.after(600, function() mt_irc:connect() end)
+		minetest.after(600, function() self:connect() end)
 		return
 	end
 
