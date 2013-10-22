@@ -40,7 +40,7 @@ To compile and pack the mod:
      the generated workspace and build from there. If using make, just run
      "make" from within the Build directory.
   - After building you will have a folder named 'irc' in your build folder.
-	 Move that to your mod folder.
+     Move that to your mod folder.
 
 
 INSTALLING
@@ -155,11 +155,11 @@ THANKS
 I'd like to thank the users who supported this mod both on the Minetest
  Forums and on the #minetest channel. In no particular order:
 
-	0gb.us, ShadowNinja, Shaun/kizeren, RAPHAEL, DARGON, Calinou, Exio,
-	vortexlabs/mrtux, marveidemanis, marktraceur, jmf/john_minetest,
-	sdzen/Muadtralk, VanessaE, PilzAdam, sfan5, celeron55, KikaRz,
-	OldCoder, RealBadAngel, and all the people who commented in the
-	forum topic. Thanks to you all!
+    0gb.us, ShadowNinja, Shaun/kizeren, RAPHAEL, DARGON, Calinou, Exio,
+    vortexlabs/mrtux, marveidemanis, marktraceur, jmf/john_minetest,
+    sdzen/Muadtralk, VanessaE, PilzAdam, sfan5, celeron55, KikaRz,
+    OldCoder, RealBadAngel, and all the people who commented in the
+    forum topic. Thanks to you all!
 
 
 LICENSE
