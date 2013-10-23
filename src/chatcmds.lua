@@ -40,6 +40,19 @@ minetest.register_chatcommand("irc_msg", {
 })
 
 
+minetest.register_chatcommand("irc_names", {
+	params = "",
+	description = "List the users in IRC.",
+	func = function(name, params)
+		local users = { }
+		for k, v in pairs(mt_irc.conn.channels[mt_irc.config.channel].users) do
+			table.insert(users, k)
+		end
+		minetest.chat_send_player(name, "Users in IRC: "..table.concat(users, ", "))
+	end
+})
+
+
 minetest.register_chatcommand("irc_connect", {
 	description = "Connect to the IRC server.",
 	privs = {irc_admin=true},
