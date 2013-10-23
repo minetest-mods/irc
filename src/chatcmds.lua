@@ -19,14 +19,15 @@ minetest.register_chatcommand("irc_msg", {
 			minetest.chat_send_player(name, "Invalid usage, see /help irc_msg.")
 			return
 		end
+		local toname_l = toname:lower()
 		local validNick = false
 		for nick, user in pairs(mt_irc.conn.channels[mt_irc.config.channel].users) do
-			if nick:lower() == toname:lower() then
+			if nick:lower() == toname_l then
 				validNick = true
 				break
 			end
 		end
-		if toname:find("Serv|Bot") then
+		if toname_l:find("serv$") or toname_l:find("bot$") then
 			validNick = false
 		end
 		if not validNick then
