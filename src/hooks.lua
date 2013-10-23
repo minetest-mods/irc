@@ -55,21 +55,23 @@ end
 
 
 function mt_irc.hooks.ctcp(user, channel, message)
-	if message:sub(2, 7):upper() == "ACTION" and
-			channel ~= mt_irc.conn.nick then
-		local action = message:sub(9, -2)
+	message = message:sub(2, -2)  -- Remove ^C
+	local args = message:split(' ')
+	local command = args[1]:upper()
+
+	local function reply(s)
+		mt_irc:queueMsg("NOTICE %s :\1%s %s\1", user.nick, command, s)
+	end
+
+	if command == "ACTION" and channel ~= mt_irc.conn.nick then
+		local action = message:sub(8, -1)
 		mt_irc:sendLocal(("* %s@IRC %s"):format(user.nick, action))
-	elseif message:sub(2, 8):upper() == "VERSION" then
-		mt_irc:queueMsg(mt_irc.msgs.notice(user.nick,
-				("\1VERSION Minetest IRC mod %s\1")
-				:format(mt_irc.version)))
-	elseif message:sub(2, 5):upper() == "PING" then
-		local ts = message:sub(7, -2)
-		mt_irc:queueMsg(mt_irc.msgs.notice(user.nick,
-				("\1PING %s\1"):format(ts)))
-	elseif message:sub(2, 5):upper() == "TIME" then
-		mt_irc:queueMsg(mt_irc.msgs.notice(user.nick,
-				("\1TIME %s\1"):format(os.date())))
+	elseif command == "VERSION" then
+		reply("Minetest IRC mod "..mt_irc.version)
+	elseif command == "PING" then
+		reply(args[2])
+	elseif command == "TIME" then
+		reply(os.date())
 	end
 end
 

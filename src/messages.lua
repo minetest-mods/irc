@@ -6,7 +6,10 @@ function mt_irc:sendLocal(message)
 	minetest.chat_send_all(message)
 end
 
-function mt_irc:queueMsg(message)
+function mt_irc:queueMsg(message, ...)
+	if select("#", ...) > 0 then
+		message = message:format(...)
+	end
 	table.insert(self.message_buffer, message)
 end
 
