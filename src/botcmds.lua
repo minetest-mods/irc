@@ -114,7 +114,7 @@ mt_irc:register_bot_command("players", {
 			table.insert(names, player:get_player_name())
 		end
 		mt_irc:say(user.nick, "Connected players: "
-				..table.concat(names))
+				..table.concat(names, ", "))
 	end
 })
 
