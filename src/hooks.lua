@@ -6,6 +6,18 @@ mt_irc.hooks = {}
 mt_irc.registered_hooks = {}
 
 
+-- TODO: Add proper conversion from CP1252 to UTF-8.
+local stripped_chars = { }
+for c = 127, 255 do
+	table.insert(stripped_chars, string.char(c))
+end
+stripped_chars = "["..table.concat(stripped_chars, "").."]"
+
+local function normalize(text)
+	return text:gsub(stripped_chars, "")
+end
+
+
 function mt_irc:doHook(conn)
 	for name, hook in pairs(self.registered_hooks) do
 		for _, func in pairs(hook) do
@@ -36,6 +48,9 @@ end
 
 
 function mt_irc.hooks.chat(user, channel, message)
+
+	message = normalize(message)
+
 	-- Strip bold, underline, and colors
 	message = message:gsub('\2', '')
 	message = message:gsub('\31', '')
