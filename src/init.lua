@@ -134,6 +134,13 @@ function mt_irc:say(to, message)
 end
 
 
+function mt_irc:reply(message)
+	if not self.last_from then
+		return
+	end
+	self:say(self.last_from, message)
+end
+
 function mt_irc:send(line)
 	self.conn:send(line)
 end

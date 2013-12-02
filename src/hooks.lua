@@ -62,8 +62,10 @@ function mt_irc.hooks.chat(user, channel, message)
 	end
 
 	if channel == mt_irc.conn.nick then
+		mt_irc.last_from = user.nick
 		mt_irc.conn:invoke("PrivateMessage", user, message)
 	else
+		mt_irc.last_from = channel
 		mt_irc.conn:invoke("OnChannelChat", user, channel, message)
 	end
 end
@@ -96,16 +98,18 @@ function mt_irc.hooks.channelChat(user, channel, message)
 	-- "<server@IRC> <player> message" into "<player@server> message"
 	-- "<server@IRC> *** player joined/left the game" into "*** player@server joined/left the game"
 	-- and "<server@IRC> * player orders a pizza" into "* player@server orders a pizza"
-	local foundchat, _, chatnick, chatmessage
-		= message:find("^<([^>]+)> (.*)$")
-	local foundjoin, _, joinnick
-		= message:find("^%*%*%* ([^%s]+) joined the game$")
-	local foundleave, _, leavenick
-		= message:find("^%*%*%* ([^%s]+) left the game$")
-	local foundaction, _, actionnick, actionmessage
-		= message:find("^%* ([^%s]+) (.*)$")
+	local foundchat, _, chatnick, chatmessage =
+		message:find("^<([^>]+)> (.*)$")
+	local foundjoin, _, joinnick =
+		message:find("^%*%*%* ([^%s]+) joined the game$")
+	local foundleave, _, leavenick =
+		message:find("^%*%*%* ([^%s]+) left the game$")
+	local foundaction, _, actionnick, actionmessage =
+		message:find("^%* ([^%s]+) (.*)$")
 
-	if foundchat then
+	if mt_irc:check_botcmd(user, channel, message) then
+		return
+	elseif foundchat then
 		mt_irc:sendLocal(("<%s@%s> %s")
 				:format(chatnick, user.nick, chatmessage))
 	elseif foundjoin then
@@ -124,29 +128,12 @@ end
 
 
 function mt_irc.hooks.pm(user, message)
-	local player_to
-	local msg
-	if message:sub(1, 1) == "@" then
-		local found, _, player_to, message = message:find("^.([^%s]+)%s(.+)$")
-		if not mt_irc.joined_players[player_to] then
-			mt_irc:say(user.nick, "User '"..player_to.."' has parted.")
-			return
-		elseif not minetest.get_player_by_name(player_to) then
-			mt_irc:say(user.nick, "User '"..player_to.."' is not in the game.")
-			return
-		end
-		minetest.chat_send_player(player_to,
-				"PM from "..user.nick.."@IRC: "..message, false)
-		mt_irc:say(user.nick, "Message sent!")
-	elseif message:sub(1, 1) == "!" then
-		mt_irc:bot_command(user, message:sub(2))
-		return
-	else
-		mt_irc:say(user.nick, "Invalid command. Use '"
-				..mt_irc.config.command_prefix
-				.."list' to see possible commands.")
-		return
+	-- Trim prefix if it is found
+	local prefix = mt_irc.config.command_prefix
+	if prefix and message:sub(1, #prefix) == prefix then
+		message = message:sub(#prefix + 1)
 	end
+	mt_irc:bot_command(user, message)
 end
 
 

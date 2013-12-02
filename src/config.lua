@@ -50,9 +50,8 @@ config.interval = tonumber(minetest.setting_get("irc.interval")) or 2.0
 -- Underlying socket timeout in seconds (number, default 60.0).
 config.timeout = tonumber(minetest.setting_get("irc.timeout")) or 60.0
 
--- Prefix to use for bot commands (char, default '!')
-config.command_prefix = minetest.setting_get("irc.command_prefix") or '!'
-config.command_prefix = config.command_prefix:sub(1, 1)
+-- Prefix to use for bot commands (string)
+config.command_prefix = minetest.setting_get("irc.command_prefix")
 
 -- Enable debug output (boolean, default false)
 config.debug = minetest.setting_getbool("irc.debug")
