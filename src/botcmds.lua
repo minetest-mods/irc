@@ -3,15 +3,16 @@ mt_irc.bot_commands = {}
 
 function mt_irc:check_botcmd(user, target, message)
 	local prefix = mt_irc.config.command_prefix
-	local nick = mt_irc.conn.nick
+	local nick = mt_irc.conn.nick:lower()
+	local nickpart = message:sub(1, #nick + 2):lower()
 
 	-- First check for a nick prefix
-	if message:sub(1, #nick + 2) == nick..": " or
-	   message:sub(1, #nick + 2) == nick..", " then
+	if nickpart == nick..": " or
+	   nickpart == nick..", " then
 		self:bot_command(user, message:sub(#nick + 3))
 		return true
 	-- Then check for the configured prefix
-	elseif prefix and message:sub(1, #prefix) == prefix then
+	elseif prefix and message:sub(1, #prefix):lower() == prefix:lower() then
 		self:bot_command(user, message:sub(#prefix + 1))
 		return true
 	end
