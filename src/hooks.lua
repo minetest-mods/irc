@@ -109,6 +109,8 @@ function mt_irc.hooks.channelChat(user, channel, message)
 
 	if mt_irc:check_botcmd(user, channel, message) then
 		return
+	elseif message:sub(1, 5) == "[off]" then
+		return
 	elseif foundchat then
 		mt_irc:sendLocal(("<%s@%s> %s")
 				:format(chatnick, user.nick, chatmessage))

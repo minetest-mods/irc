@@ -109,6 +109,9 @@ Once the game is connected to the IRC channel, chatting using the 'T' or
  by anyone. Also, when someone sends a message to the channel, that text
  will be visible in-game.
 
+Messages that begin with "[off]" from in-game or IRC are not sent to the
+ other side.
+
 This mod also adds a few chat commands:
 
     /irc_msg <nick> <message>
