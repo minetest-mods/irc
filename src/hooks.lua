@@ -115,10 +115,10 @@ function mt_irc.hooks.channelChat(user, channel, message)
 		mt_irc:sendLocal(("<%s@%s> %s")
 				:format(chatnick, user.nick, chatmessage))
 	elseif foundjoin then
-		mt_irc:sendLocal(("*** %s@%s joined the game")
+		mt_irc:sendLocal(("*** %s joined %s")
 				:format(joinnick, user.nick))
 	elseif foundleave then
-		mt_irc:sendLocal(("*** %s@%s left the game")
+		mt_irc:sendLocal(("*** %s left %s")
 				:format(leavenick, user.nick))
 	elseif foundaction then
 		mt_irc:sendLocal(("* %s@%s %s")
