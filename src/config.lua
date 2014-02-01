@@ -31,6 +31,7 @@ setting("string", "SASLUser", mt_irc.config.nick) -- SASL username
 setting("string", "SASLPass") -- SASL password
 setting("string", "channel", "##mt-irc-mod") -- Channel to join
 setting("string", "key") -- Key for the channel
+setting("bool",   "send_join_part", true) -- Whether to send player join and part messages to the channel
 
 -----------------------
 -- ADVANCED SETTINGS --
