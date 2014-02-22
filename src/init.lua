@@ -41,10 +41,18 @@ minetest.register_privilege("irc_admin", {
 	give_to_singleplayer = true
 })
 
+local firstrun = true
 
 minetest.register_globalstep(function(dtime) return mt_irc:step(dtime) end)
 
 function mt_irc:step(dtime)
+	if firstrun then
+		firstrun = false
+		if self.config.auto_connect then
+			self:connect()
+		end
+	end
+
 	if not self.connected then return end
 
 	-- Tick down the recent message count
@@ -145,8 +153,4 @@ function mt_irc:send(line)
 	self.conn:send(line)
 end
 
-
-if mt_irc.config.auto_connect then
-	mt_irc:connect()
-end
 
