@@ -41,17 +41,17 @@ minetest.register_privilege("irc_admin", {
 	give_to_singleplayer = true
 })
 
-local firstrun = true
+local stepnum = 0
 
 minetest.register_globalstep(function(dtime) return mt_irc:step(dtime) end)
 
 function mt_irc:step(dtime)
-	if firstrun then
-		firstrun = false
+	if stepnum == 3 then
 		if self.config.auto_connect then
 			self:connect()
 		end
 	end
+	stepnum = stepnum + 1
 
 	if not self.connected then return end
 
