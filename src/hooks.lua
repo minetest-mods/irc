@@ -107,9 +107,9 @@ function mt_irc.hooks.channelChat(user, channel, message)
 	local foundaction, _, actionnick, actionmessage =
 		message:find("^%* ([^%s]+) (.*)$")
 
-	if mt_irc:check_botcmd(user, channel, message) then
-		return
-	elseif message:sub(1, 5) == "[off]" then
+	mt_irc:check_botcmd(user, channel, message)
+
+	if message:sub(1, 5) == "[off]" then
 		return
 	elseif foundchat then
 		mt_irc:sendLocal(("<%s@%s> %s")
