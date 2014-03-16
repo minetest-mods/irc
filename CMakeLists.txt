@@ -55,11 +55,6 @@ set(LUASOCKET_SRCS
 	src/luasocket/udp.c
 	src/luasocket/except.c
 	src/luasocket/select.c
-	src/luasocket/buffer.c
-	src/luasocket/auxiliar.c
-	src/luasocket/options.c
-	src/luasocket/timeout.c
-	src/luasocket/io.c
 	src/luasocket/mime.c
 )
 
