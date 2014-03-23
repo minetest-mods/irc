@@ -14,7 +14,6 @@ mt_irc = {
 
 -- To find LuaIRC and LuaSocket
 package.path = mt_irc.modpath.."/?/init.lua;"
-		..mt_irc.modpath.."/irc/?.lua;"
 		..mt_irc.modpath.."/?.lua;"
 		..package.path
 package.cpath = mt_irc.modpath.."/lib?.so;"
