@@ -3,16 +3,15 @@ IRC Mod for Minetest
 
 INTRODUCTION
 ------------
-This mod is just a glue between luasocket, LuaIRC, and Minetest. It
- provides a two-way communication between the in-game chat, and an
- arbitrary IRC channel. 
+This mod is just a glue between IRC and Minetest. It provides two-way
+ communication between the in-game chat, and an arbitrary IRC channel.
 
 The forum topic is at http://minetest.net/forum/viewtopic.php?id=3905
 
  
 COMPILING
 ---------
-Make sure you have CMake (http://cmake.org/), and of course, a C compiler,
+Make sure you have SCons (http://scons.org/), and of course, a C compiler,
  on your system before proceeding.
 For Windows, try MinGW32 (http://mingw.org/).
 For Unix-based systems, you should not have any problems with the C compiler
@@ -21,26 +20,19 @@ For Unix-based systems, you should not have any problems with the C compiler
  ISO), since vanilla Puppy does not come with 'gcc'. See your Puppy docs for
  more info about how to install additional SFS files.
 
-Quick one line build for linux.  
-
-git clone https://github.com/kaeza/minetest-irc.git && cd minetest-irc && git submodule update --init && ./quick_install.sh <mod directory>
-Please change <mod directory> to fit your install of minetest.
+Quick one line build for linux:
+	git clone https://github.com/kaeza/minetest-irc.git && cd minetest-irc && git submodule update --init && ./quick_install.sh <Mod directory>
+Please change <Mod directory> to fit your installation of minetest.
 
 To compile and pack the mod:
 
-  - Open a command prompt/terminal and CD to the minetest-irc directory.
-  - (optional) Create a directory named "Build", and CD into it:
-      mkdir Build
-      cd Build
-  - Run CMake to generate the build system (see your CMake docs for more
-     information about command line options, in particular the '-G' option).
-      cmake . (cmake .. if you made a seperate build directory)
-  - Use the build tool for the generated build system to compile the
-     native library. For example, if using Microsoft Visual Studio, open
-     the generated workspace and build from there. If using make, just run
-     "make" from within the Build directory.
-  - After building you will have a folder named 'irc' in your build folder.
-     Move that to your mod folder.
+  - Open a command prompt/terminal and move to the minetest-irc directory.
+  - Initialize and update submodules if needed.
+      git submodule init  # Only needed first time
+      git submodule update # Only needed first time and after updating
+  - Run SCons to compile luasocket. (see `scons -h` for extra options)
+      scons
+  - After building you will have a folder named `irc` in your `build` folder. Move that to your mod folder.
 
 
 INSTALLING
