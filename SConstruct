@@ -84,7 +84,7 @@ luasocket_out = env.LoadableModule(
 )
 
 
-env.InstallAs("$prefix/irc/irc", "src/LuaIRC")
+env.Install("$prefix/irc/irc", Glob("src/LuaIRC/*.lua"))
 env.Install("$prefix/irc", Glob("src/luasocket/*.lua"))
 env.Install("$prefix/irc", Glob("src/*.lua"))
 env.Install("$prefix/irc", Glob("src/*.txt"))

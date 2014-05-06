@@ -3,7 +3,7 @@
 
 
 mt_irc = {
-	version = "0.2.0",  -- Also update CMakeLists.txt
+	version = "0.2.0",
 	connected = false,
 	cur_time = 0,
 	message_buffer = {},
@@ -20,7 +20,7 @@ package.cpath = mt_irc.modpath.."/lib?.so;"
 		..mt_irc.modpath.."/?.dll;"
 		..package.cpath
 
-local irc = require('irc')
+require('irc')
 
 dofile(mt_irc.modpath.."/config.lua")
 dofile(mt_irc.modpath.."/messages.lua")
@@ -54,31 +54,11 @@ function mt_irc:step(dtime)
 
 	if not self.connected then return end
 
-	-- Tick down the recent message count
-	self.cur_time = self.cur_time + dtime
-	if self.cur_time >= self.config.interval then
-		if self.recent_message_count > 0 then
-			self.recent_message_count = self.recent_message_count - 1
-		end
-		self.cur_time = self.cur_time - self.config.interval
-	end
-
 	-- Hooks will manage incoming messages and errors
-	if not pcall(function() self.conn:think() end) then
+	local good, err = xpcall(function() self.conn:think() end, debug.traceback)
+	if not good then
+		print(err)
 		return
-	end
-
-	-- Send messages in the buffer
-	if #self.message_buffer > 10 then
-		minetest.log("error", "IRC: Message buffer overflow, clearing.")
-		self.message_buffer = {}
-	elseif #self.message_buffer > 0 then
-		for i=1, #self.message_buffer do
-			if self.recent_message_count > 4 then break end
-			self.recent_message_count = self.recent_message_count + 1
-			local msg = table.remove(self.message_buffer, 1) --Pop the first message
-			self:send(msg)
-		end
 	end
 end
 
@@ -137,7 +117,7 @@ function mt_irc:say(to, message)
 	end
 	to = to or self.config.channel
 
-	self:queueMsg(self.msgs.privmsg(to, message))
+	self:queue(irc.msgs.privmsg(to, message))
 end
 
 
@@ -148,8 +128,11 @@ function mt_irc:reply(message)
 	self:say(self.last_from, message)
 end
 
-function mt_irc:send(line)
-	self.conn:send(line)
+function mt_irc:send(msg)
+	self.conn:send(msg)
 end
 
+function mt_irc:queue(msg)
+	self.conn:queue(msg)
+end
 

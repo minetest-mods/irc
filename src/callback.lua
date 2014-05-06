@@ -30,8 +30,7 @@ minetest.register_on_chat_message(function(name, message)
 	if nl then
 		message = message:sub(1, nl - 1)
 	end
-	mt_irc:queueMsg(mt_irc.msgs.playerMessage(
-			mt_irc.config.channel, name, message))
+	mt_irc:say(mt_irc:playerMessage(name, message))
 end)
 
 

@@ -6,35 +6,9 @@ function mt_irc:sendLocal(message)
 	minetest.chat_send_all(message)
 end
 
-function mt_irc:queueMsg(message, ...)
-	if select("#", ...) > 0 then
-		message = message:format(...)
-	end
-	table.insert(self.message_buffer, message)
+mt_irc.msgs = irc.msgs
+
+function mt_irc:playerMessage(name, message)
+	return ("<%s> %s"):format(name, message)
 end
-
-function mt_irc:sendMsg(message)
-	self.conn:send(message)
-end
-
-mt_irc.msgs = {}
-
-function mt_irc.msgs.privmsg(to, message)
-	return ("PRIVMSG %s :%s"):format(to, message)
-end
-
-function mt_irc.msgs.notice(to, message)
-	return ("NOTICE %s :%s"):format(to, message)
-end
-
-function mt_irc.msgs.action(to, message)
-	return ("PRIVMSG %s :%cACTION %s%c")
-		:format(to, string.char(1), message, string.char(1))
-end
-
-function mt_irc.msgs.playerMessage(to, name, message)
-	return mt_irc.msgs.privmsg(to, ("<%s> %s"):format(name, message))
-end
-
--- TODO Add more message types
 

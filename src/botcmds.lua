@@ -1,47 +1,48 @@
 
 mt_irc.bot_commands = {}
 
-function mt_irc:check_botcmd(user, target, message)
+function mt_irc:check_botcmd(msg)
 	local prefix = mt_irc.config.command_prefix
 	local nick = mt_irc.conn.nick:lower()
-	local nickpart = message:sub(1, #nick + 2):lower()
+	local text = msg.args[2]
+	local nickpart = text:sub(1, #nick + 2):lower()
 
 	-- First check for a nick prefix
 	if nickpart == nick..": " or
 	   nickpart == nick..", " then
-		self:bot_command(user, message:sub(#nick + 3))
+		self:bot_command(msg, text:sub(#nick + 3))
 		return true
 	-- Then check for the configured prefix
-	elseif prefix and message:sub(1, #prefix):lower() == prefix:lower() then
-		self:bot_command(user, message:sub(#prefix + 1))
+	elseif prefix and text:sub(1, #prefix):lower() == prefix:lower() then
+		self:bot_command(msg, text:sub(#prefix + 1))
 		return true
 	end
 	return false
 end
 
 
-function mt_irc:bot_command(user, message)
-	if message:sub(1, 1) == "@" then
-		local found, _, player_to, message = message:find("^.([^%s]+)%s(.+)$")
-		if not mt_irc.joined_players[player_to] then
-			mt_irc:reply("User '"..player_to.."' has parted.")
-			return
-		elseif not minetest.get_player_by_name(player_to) then
+function mt_irc:bot_command(msg, text)
+	if text:sub(1, 1) == "@" then
+		local found, _, player_to, message = text:find("^.([^%s]+)%s(.+)$")
+		if not minetest.get_player_by_name(player_to) then
 			mt_irc:reply("User '"..player_to.."' is not in the game.")
+			return
+		elseif not mt_irc.joined_players[player_to] then
+			mt_irc:reply("User '"..player_to.."' is not using IRC.")
 			return
 		end
 		minetest.chat_send_player(player_to,
-				"PM from "..user.nick.."@IRC: "..message, false)
+				"PM from "..msg.user.nick.."@IRC: "..message, false)
 		mt_irc:reply("Message sent!")
 		return
 	end
-	local pos = message:find(" ", 1, true)
+	local pos = text:find(" ", 1, true)
 	local cmd, args
 	if pos then
-		cmd = message:sub(1, pos - 1)
-		args = message:sub(pos + 1)
+		cmd = text:sub(1, pos - 1)
+		args = text:sub(pos + 1)
 	else
-		cmd = message
+		cmd = text
 		args = ""
 	end
  
@@ -51,7 +52,7 @@ function mt_irc:bot_command(user, message)
 		return
 	end
  
-	self.bot_commands[cmd].func(user, args)
+	self.bot_commands[cmd].func(msg.user, args)
 end
 
 

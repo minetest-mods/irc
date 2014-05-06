@@ -63,7 +63,7 @@ end)
 
 function mt_irc:sendLocal(message)
         for name, _ in pairs(self.joined_players) do
-		minetest.chat_send_player(name, message, false)
+		minetest.chat_send_player(name, message)
 	end
 end
 

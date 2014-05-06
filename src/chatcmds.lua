@@ -35,7 +35,7 @@ minetest.register_chatcommand("irc_msg", {
 				"You can not message that user. (Hint: They have to be in the channel)")
 			return
 		end
-		mt_irc:queueMsg(mt_irc.msgs.playerMessage(toname, name, message))
+		mt_irc:say(toname, mt_irc:playerMessage(name, message))
 		minetest.chat_send_player(name, "Message sent!")
 	end
 })
@@ -69,6 +69,7 @@ minetest.register_chatcommand("irc_connect", {
 
 
 minetest.register_chatcommand("irc_disconnect", {
+	params = "[message]",
 	description = "Disconnect from the IRC server.",
 	privs = {irc_admin=true},
 	func = function(name, param)
@@ -76,7 +77,10 @@ minetest.register_chatcommand("irc_disconnect", {
 			minetest.chat_send_player(name, "You are not connected to IRC.")
 			return
 		end
-		mt_irc:disconnect("Manual disconnect.")
+		if params == "" then
+			params = "Manual disconnect by "..name
+		end
+		mt_irc:disconnect(param)
 	end
 })
 
@@ -104,15 +108,15 @@ minetest.register_chatcommand("irc_quote", {
 			minetest.chat_send_player(name, "You are not connected to IRC.")
 			return
 		end
-		mt_irc:queueMsg(param)
+		mt_irc:queue(param)
 		minetest.chat_send_player(name, "Command sent!")
 	end
 })
 
 
 local oldme = minetest.chatcommands["me"].func
-minetest.chatcommands["me"].func = function(name, param)
-	oldme(name, param)
+minetest.chatcommands["me"].func = function(name, param, ...)
+	oldme(name, param, ...)
 	mt_irc:say(("* %s %s"):format(name, param))
 end
 
