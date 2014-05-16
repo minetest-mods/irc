@@ -56,12 +56,12 @@ are not set, the default value is used.
   * `irc.NSPass` (string, default nil)
 	NickServ password. Don't use this if you use SASL authentication.
 
-  * `irc.SASLPass` (string, default nil)
+  * `irc.sasl.pass` (string, default nil)
 	SASL password, same as nickserv password.
 	You should use this instead of NickServ authentication
 	if the server supports it.
 
-  * `irc.SASLUser` (string, default irc.nick)
+  * `irc.sasl.user` (string, default `irc.nick`)
 	The SASL username. This should normaly be set to your main NickServ account name.
 
   * `irc.debug` (boolean, default false)

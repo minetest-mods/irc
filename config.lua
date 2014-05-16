@@ -27,8 +27,8 @@ setting("string", "nick") -- Nickname (default "MT-<hash>", <hash> 6 random hexi
 setting("string", "server", "irc.freenode.net") -- Server to connect on joinplayer
 setting("number", "port", 6667) -- Port to connect on joinplayer
 setting("string", "NSPass") -- NickServ password
-setting("string", "SASLUser", mt_irc.config.nick) -- SASL username
-setting("string", "SASLPass") -- SASL password
+setting("string", "sasl.user", mt_irc.config.nick) -- SASL username
+setting("string", "sasl.pass") -- SASL password
 setting("string", "channel", "##mt-irc-mod") -- Channel to join
 setting("string", "key") -- Key for the channel
 setting("bool",   "send_join_part", true) -- Whether to send player join and part messages to the channel

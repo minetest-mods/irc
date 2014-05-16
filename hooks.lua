@@ -212,12 +212,12 @@ end
 
 
 function mt_irc.hooks.preregister(conn)
-	if not (mt_irc.config.SASLUser and mt_irc.config.SASLPass) then return end
+	if not (mt_irc.config["sasl.user"] and mt_irc.config["sasl.pass"]) then return end
 	local authString = mt_irc.b64e(
 		("%s\x00%s\x00%s"):format(
-		mt_irc.config.SASLUser,
-		mt_irc.config.SASLUser,
-		mt_irc.config.SASLPass)
+		mt_irc.config["sasl.user"],
+		mt_irc.config["sasl.user"],
+		mt_irc.config["sasl.pass"])
 	)
 	conn:send("CAP REQ sasl")
 	conn:send("AUTHENTICATE PLAIN")
