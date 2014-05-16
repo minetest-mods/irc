@@ -1,6 +1,14 @@
 -- This file is licensed under the terms of the BSD 2-clause license.
 -- See LICENSE.txt for details.
 
+local modpath = minetest.get_modpath(minetest.get_current_modname())
+
+package.path =
+		package.path..";"
+		-- To find LuaIRC's init.lua
+		..modpath.."/?/init.lua;"
+		-- For LuaIRC to find its files
+		..modpath.."/?.lua"
 
 mt_irc = {
 	version = "0.2.0",
@@ -9,28 +17,20 @@ mt_irc = {
 	message_buffer = {},
 	recent_message_count = 0,
 	joined_players = {},
-	modpath = minetest.get_modpath(minetest.get_current_modname()),
+	modpath = modpath,
+	lib = require("irc"),
 }
+local irc = mt_irc.lib
 
--- To find LuaIRC and LuaSocket
-package.path = mt_irc.modpath.."/?/init.lua;"
-		..mt_irc.modpath.."/?.lua;"
-		..package.path
-package.cpath = mt_irc.modpath.."/lib?.so;"
-		..mt_irc.modpath.."/?.dll;"
-		..package.cpath
-
-require('irc')
-
-dofile(mt_irc.modpath.."/config.lua")
-dofile(mt_irc.modpath.."/messages.lua")
-dofile(mt_irc.modpath.."/hooks.lua")
-dofile(mt_irc.modpath.."/callback.lua")
-dofile(mt_irc.modpath.."/chatcmds.lua")
-dofile(mt_irc.modpath.."/botcmds.lua")
-dofile(mt_irc.modpath.."/util.lua")
+dofile(modpath.."/config.lua")
+dofile(modpath.."/messages.lua")
+dofile(modpath.."/hooks.lua")
+dofile(modpath.."/callback.lua")
+dofile(modpath.."/chatcmds.lua")
+dofile(modpath.."/botcmds.lua")
+dofile(modpath.."/util.lua")
 if mt_irc.config.enable_player_part then
-	dofile(mt_irc.modpath.."/player_part.lua")
+	dofile(modpath.."/player_part.lua")
 else
 	setmetatable(mt_irc.joined_players, {__index = function(index) return true end})
 end
