@@ -131,10 +131,12 @@ function irc:reply(message)
 end
 
 function irc:send(msg)
+	if not self.connected then return end
 	self.conn:send(msg)
 end
 
 function irc:queue(msg)
+	if not self.connected then return end
 	self.conn:queue(msg)
 end
 
