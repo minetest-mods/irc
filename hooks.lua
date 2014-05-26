@@ -2,8 +2,8 @@
 -- See LICENSE.txt for details.
 
 
-mt_irc.hooks = {}
-mt_irc.registered_hooks = {}
+irc.hooks = {}
+irc.registered_hooks = {}
 
 
 -- TODO: Add proper conversion from CP1252 to UTF-8.
@@ -21,7 +21,7 @@ local function normalize(text)
 end
 
 
-function mt_irc:doHook(conn)
+function irc:doHook(conn)
 	for name, hook in pairs(self.registered_hooks) do
 		for _, func in pairs(hook) do
 			conn:hook(name, func)
@@ -30,59 +30,59 @@ function mt_irc:doHook(conn)
 end
 
 
-function mt_irc:register_hook(name, func)
+function irc:register_hook(name, func)
 	self.registered_hooks[name] = self.registered_hooks[name] or {}
 	table.insert(self.registered_hooks[name], func)
 end
 
 
-function mt_irc.hooks.raw(line)
-	if mt_irc.config.debug then
+function irc.hooks.raw(line)
+	if irc.config.debug then
 		print("RECV: "..line)
 	end
 end
 
 
-function mt_irc.hooks.send(line)
-	if mt_irc.config.debug then
+function irc.hooks.send(line)
+	if irc.config.debug then
 		print("SEND: "..line)
 	end
 end
 
 
-function mt_irc.hooks.chat(msg)
+function irc.hooks.chat(msg)
 	local channel, text = msg.args[1], msg.args[2]
 	if text:sub(1, 1) == string.char(1) then
-		mt_irc.conn:invoke("OnCTCP", msg)
+		irc.conn:invoke("OnCTCP", msg)
 		return
 	end
 
-	if channel == mt_irc.conn.nick then
-		mt_irc.last_from = msg.user.nick
-		mt_irc.conn:invoke("PrivateMessage", msg)
+	if channel == irc.conn.nick then
+		irc.last_from = msg.user.nick
+		irc.conn:invoke("PrivateMessage", msg)
 	else
-		mt_irc.last_from = channel
-		mt_irc.conn:invoke("OnChannelChat", msg)
+		irc.last_from = channel
+		irc.conn:invoke("OnChannelChat", msg)
 	end
 end
 
 
-function mt_irc.hooks.ctcp(msg)
+function irc.hooks.ctcp(msg)
 	local text = msg.args[2]:sub(2, -2)  -- Remove ^C
 	local args = text:split(' ')
 	local command = args[1]:upper()
 
 	local function reply(s)
-		mt_irc:queue(irc.msgs.notice(msg.user.nick,
+		irc:queue(irc.msgs.notice(msg.user.nick,
 				("\1%s %s\1"):format(command, s)))
 	end
 
-	if command == "ACTION" and msg.args[1] == mt_irc.config.channel then
+	if command == "ACTION" and msg.args[1] == irc.config.channel then
 		local action = text:sub(8, -1)
-		mt_irc:sendLocal(("* %s@IRC %s"):format(msg.user.nick, action))
+		irc:sendLocal(("* %s@IRC %s"):format(msg.user.nick, action))
 	elseif command == "VERSION" then
 		reply(("Minetest IRC mod version %s.")
-			:format(mt_irc.version))
+			:format(irc.version))
 	elseif command == "PING" then
 		reply(args[2])
 	elseif command == "TIME" then
@@ -91,7 +91,7 @@ function mt_irc.hooks.ctcp(msg)
 end
 
 
-function mt_irc.hooks.channelChat(msg)
+function irc.hooks.channelChat(msg)
 	local text = normalize(msg.args[2])
 
 	-- Support multiple servers in a channel better by converting:
@@ -107,58 +107,58 @@ function mt_irc.hooks.channelChat(msg)
 	local foundaction, _, actionnick, actionmessage =
 		text:find("^%* ([^%s]+) (.*)$")
 
-	mt_irc:check_botcmd(msg)
+	irc:check_botcmd(msg)
 
 	if text:sub(1, 5) == "[off]" then
 		return
 	elseif foundchat then
-		mt_irc:sendLocal(("<%s@%s> %s")
+		irc:sendLocal(("<%s@%s> %s")
 				:format(chatnick, msg.user.nick, chatmessage))
 	elseif foundjoin then
-		mt_irc:sendLocal(("*** %s joined %s")
+		irc:sendLocal(("*** %s joined %s")
 				:format(joinnick, msg.user.nick))
 	elseif foundleave then
-		mt_irc:sendLocal(("*** %s left %s")
+		irc:sendLocal(("*** %s left %s")
 				:format(leavenick, msg.user.nick))
 	elseif foundaction then
-		mt_irc:sendLocal(("* %s@%s %s")
+		irc:sendLocal(("* %s@%s %s")
 				:format(actionnick, msg.user.nick, actionmessage))
 	else
-		mt_irc:sendLocal(("<%s@IRC> %s"):format(msg.user.nick, text))
+		irc:sendLocal(("<%s@IRC> %s"):format(msg.user.nick, text))
 	end
 end
 
 
-function mt_irc.hooks.pm(msg)
+function irc.hooks.pm(msg)
 	-- Trim prefix if it is found
 	local text = msg.args[2]
-	local prefix = mt_irc.config.command_prefix
+	local prefix = irc.config.command_prefix
 	if prefix and text:sub(1, #prefix) == prefix then
 		text = text:sub(#prefix + 1)
 	end
-	mt_irc:bot_command(msg, text)
+	irc:bot_command(msg, text)
 end
 
 
-function mt_irc.hooks.kick(channel, target, prefix, reason)
-	if target == mt_irc.conn.nick then
+function irc.hooks.kick(channel, target, prefix, reason)
+	if target == irc.conn.nick then
 		minetest.chat_send_all("IRC: kicked from "..channel.." by "..prefix.nick..".")
-		mt_irc:disconnect("Kicked")
+		irc:disconnect("Kicked")
 	else
-		mt_irc:sendLocal(("-!- %s was kicked from %s by %s [%s]")
+		irc:sendLocal(("-!- %s was kicked from %s by %s [%s]")
 				:format(target, channel, prefix.nick, reason))
 	end
 end
 
 
-function mt_irc.hooks.notice(user, target, message)
-	if user.nick and target == mt_irc.config.channel then
-		mt_irc:sendLocal("-"..user.nick.."@IRC- "..message)
+function irc.hooks.notice(user, target, message)
+	if user.nick and target == irc.config.channel then
+		irc:sendLocal("-"..user.nick.."@IRC- "..message)
 	end
 end
 
 
-function mt_irc.hooks.mode(user, target, modes, ...)
+function irc.hooks.mode(user, target, modes, ...)
 	local by = ""
 	if user.nick then
 		by = " by "..user.nick
@@ -173,37 +173,37 @@ function mt_irc.hooks.mode(user, target, modes, ...)
 end
 
 
-function mt_irc.hooks.nick(user, newNick)
-	mt_irc:sendLocal(("-!- %s is now known as %s")
+function irc.hooks.nick(user, newNick)
+	irc:sendLocal(("-!- %s is now known as %s")
 			:format(user.nick, newNick))
 end
 
 
-function mt_irc.hooks.join(user, channel)
-	mt_irc:sendLocal(("-!- %s joined %s")
+function irc.hooks.join(user, channel)
+	irc:sendLocal(("-!- %s joined %s")
 			:format(user.nick, channel))
 end
 
 
-function mt_irc.hooks.part(user, channel, reason)
+function irc.hooks.part(user, channel, reason)
 	reason = reason or ""
-	mt_irc:sendLocal(("-!- %s has left %s [%s]")
+	irc:sendLocal(("-!- %s has left %s [%s]")
 			:format(user.nick, channel, reason))
 end
 
 
-function mt_irc.hooks.quit(user, reason)
-	mt_irc:sendLocal(("-!- %s has quit [%s]")
+function irc.hooks.quit(user, reason)
+	irc:sendLocal(("-!- %s has quit [%s]")
 			:format(user.nick, reason))
 end
 
 
-function mt_irc.hooks.disconnect(message, isError)
-	mt_irc.connected = false
+function irc.hooks.disconnect(message, isError)
+	irc.connected = false
 	if isError then
 		minetest.log("error",  "IRC: Error: Disconnected, reconnecting in one minute.")
 		minetest.chat_send_all("IRC: Error: Disconnected, reconnecting in one minute.")
-		minetest.after(60, mt_irc.connect, mt_irc)
+		minetest.after(60, irc.connect, irc)
 	else
 		minetest.log("action", "IRC: Disconnected.")
 		minetest.chat_send_all("IRC: Disconnected.")
@@ -211,13 +211,13 @@ function mt_irc.hooks.disconnect(message, isError)
 end
 
 
-function mt_irc.hooks.preregister(conn)
-	if not (mt_irc.config["sasl.user"] and mt_irc.config["sasl.pass"]) then return end
-	local authString = mt_irc.b64e(
+function irc.hooks.preregister(conn)
+	if not (irc.config["sasl.user"] and irc.config["sasl.pass"]) then return end
+	local authString = irc.b64e(
 		("%s\x00%s\x00%s"):format(
-		mt_irc.config["sasl.user"],
-		mt_irc.config["sasl.user"],
-		mt_irc.config["sasl.pass"])
+		irc.config["sasl.user"],
+		irc.config["sasl.user"],
+		irc.config["sasl.pass"])
 	)
 	conn:send("CAP REQ sasl")
 	conn:send("AUTHENTICATE PLAIN")
@@ -226,19 +226,19 @@ function mt_irc.hooks.preregister(conn)
 end
 
 
-mt_irc:register_hook("PreRegister",     mt_irc.hooks.preregister)
-mt_irc:register_hook("OnRaw",           mt_irc.hooks.raw)
-mt_irc:register_hook("OnSend",          mt_irc.hooks.send)
-mt_irc:register_hook("DoPrivmsg",       mt_irc.hooks.chat)
-mt_irc:register_hook("OnPart",          mt_irc.hooks.part)
-mt_irc:register_hook("OnKick",          mt_irc.hooks.kick)
-mt_irc:register_hook("OnJoin",          mt_irc.hooks.join)
-mt_irc:register_hook("OnQuit",          mt_irc.hooks.quit)
-mt_irc:register_hook("NickChange",      mt_irc.hooks.nick)
-mt_irc:register_hook("OnCTCP",          mt_irc.hooks.ctcp)
-mt_irc:register_hook("PrivateMessage",  mt_irc.hooks.pm)
-mt_irc:register_hook("OnNotice",        mt_irc.hooks.notice)
-mt_irc:register_hook("OnChannelChat",   mt_irc.hooks.channelChat)
-mt_irc:register_hook("OnModeChange",    mt_irc.hooks.mode)
-mt_irc:register_hook("OnDisconnect",    mt_irc.hooks.disconnect)
+irc:register_hook("PreRegister",     irc.hooks.preregister)
+irc:register_hook("OnRaw",           irc.hooks.raw)
+irc:register_hook("OnSend",          irc.hooks.send)
+irc:register_hook("DoPrivmsg",       irc.hooks.chat)
+irc:register_hook("OnPart",          irc.hooks.part)
+irc:register_hook("OnKick",          irc.hooks.kick)
+irc:register_hook("OnJoin",          irc.hooks.join)
+irc:register_hook("OnQuit",          irc.hooks.quit)
+irc:register_hook("NickChange",      irc.hooks.nick)
+irc:register_hook("OnCTCP",          irc.hooks.ctcp)
+irc:register_hook("PrivateMessage",  irc.hooks.pm)
+irc:register_hook("OnNotice",        irc.hooks.notice)
+irc:register_hook("OnChannelChat",   irc.hooks.channelChat)
+irc:register_hook("OnModeChange",    irc.hooks.mode)
+irc:register_hook("OnDisconnect",    irc.hooks.disconnect)
 

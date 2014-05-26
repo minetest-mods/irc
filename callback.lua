@@ -4,25 +4,25 @@
 
 minetest.register_on_joinplayer(function(player)
 	local name = player:get_player_name()
-	if mt_irc.connected and mt_irc.config.send_join_part then
-		mt_irc:say("*** "..name.." joined the game")
+	if irc.connected and irc.config.send_join_part then
+		irc:say("*** "..name.." joined the game")
 	end
 end)
 
 
 minetest.register_on_leaveplayer(function(player)
 	local name = player:get_player_name()
-	if mt_irc.connected and mt_irc.config.send_join_part then
-		mt_irc:say("*** "..name.." left the game")
+	if irc.connected and irc.config.send_join_part then
+		irc:say("*** "..name.." left the game")
 	end
 end)
 
 
 minetest.register_on_chat_message(function(name, message)
-	if not mt_irc.connected
+	if not irc.connected
 	   or message:sub(1, 1) == "/"
 	   or message:sub(1, 5) == "[off]"
-	   or not mt_irc.joined_players[name]
+	   or not irc.joined_players[name]
 	   or (not minetest.check_player_privs(name, {shout=true})) then
 		return
 	end
@@ -30,11 +30,11 @@ minetest.register_on_chat_message(function(name, message)
 	if nl then
 		message = message:sub(1, nl - 1)
 	end
-	mt_irc:say(mt_irc:playerMessage(name, message))
+	irc:say(irc:playerMessage(name, message))
 end)
 
 
 minetest.register_on_shutdown(function()
-	mt_irc:disconnect("Game shutting down.")
+	irc:disconnect("Game shutting down.")
 end)
 

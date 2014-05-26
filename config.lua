@@ -2,7 +2,7 @@
 -- See LICENSE.txt for details.
 
 
-mt_irc.config = {}
+irc.config = {}
 
 local function setting(stype, name, default)
 	local value
@@ -16,7 +16,7 @@ local function setting(stype, name, default)
 	if value == nil then
 		value = default
 	end
-	mt_irc.config[name] = value
+	irc.config[name] = value
 end
 
 -------------------------
@@ -27,7 +27,7 @@ setting("string", "nick") -- Nickname (default "MT-<hash>", <hash> 6 random hexi
 setting("string", "server", "irc.freenode.net") -- Server to connect on joinplayer
 setting("number", "port", 6667) -- Port to connect on joinplayer
 setting("string", "NSPass") -- NickServ password
-setting("string", "sasl.user", mt_irc.config.nick) -- SASL username
+setting("string", "sasl.user", irc.config.nick) -- SASL username
 setting("string", "sasl.pass") -- SASL password
 setting("string", "channel", "##mt-irc-mod") -- Channel to join
 setting("string", "key") -- Key for the channel
@@ -47,10 +47,10 @@ setting("bool",   "auto_join", true) -- Whether to automatically show players in
 setting("bool",   "auto_connect", true) -- Whether to automatically connect to the server on mod load
 
 -- Generate a random nickname if one isn't specified.
-if not mt_irc.config.nick then
+if not irc.config.nick then
 	local pr = PseudoRandom(os.time())
 	-- Workaround for bad distribution in minetest PRNG implementation.
-	mt_irc.config.nick = ("MT-%02X%02X%02X"):format(
+	irc.config.nick = ("MT-%02X%02X%02X"):format(
 		pr:next(0, 255),
 		pr:next(0, 255),
 		pr:next(0, 255)

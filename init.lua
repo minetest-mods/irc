@@ -10,7 +10,7 @@ package.path =
 		-- For LuaIRC to find its files
 		..modpath.."/?.lua"
 
-mt_irc = {
+irc = {
 	version = "0.2.0",
 	connected = false,
 	cur_time = 0,
@@ -20,7 +20,9 @@ mt_irc = {
 	modpath = modpath,
 	lib = require("irc"),
 }
-local irc = mt_irc.lib
+
+-- Compatibility
+mt_irc = irc
 
 dofile(modpath.."/config.lua")
 dofile(modpath.."/messages.lua")
@@ -29,10 +31,10 @@ dofile(modpath.."/callback.lua")
 dofile(modpath.."/chatcmds.lua")
 dofile(modpath.."/botcmds.lua")
 dofile(modpath.."/util.lua")
-if mt_irc.config.enable_player_part then
+if irc.config.enable_player_part then
 	dofile(modpath.."/player_part.lua")
 else
-	setmetatable(mt_irc.joined_players, {__index = function(index) return true end})
+	setmetatable(irc.joined_players, {__index = function(index) return true end})
 end
 
 minetest.register_privilege("irc_admin", {
@@ -42,9 +44,9 @@ minetest.register_privilege("irc_admin", {
 
 local stepnum = 0
 
-minetest.register_globalstep(function(dtime) return mt_irc:step(dtime) end)
+minetest.register_globalstep(function(dtime) return irc:step(dtime) end)
 
-function mt_irc:step(dtime)
+function irc:step(dtime)
 	if stepnum == 3 then
 		if self.config.auto_connect then
 			self:connect()
@@ -63,12 +65,12 @@ function mt_irc:step(dtime)
 end
 
 
-function mt_irc:connect()
+function irc:connect()
 	if self.connected then
 		minetest.log("error", "IRC: Ignoring attempt to connect when already connected.")
 		return
 	end
-	self.conn = irc.new({
+	self.conn = irc.lib.new({
 		nick = self.config.nick,
 		username = "Minetest",
 		realname = "Minetest",
@@ -102,7 +104,7 @@ function mt_irc:connect()
 end
 
 
-function mt_irc:disconnect(message)
+function irc:disconnect(message)
 	if self.connected then
 		--The OnDisconnect hook will clear self.connected and print a disconnect message
 		self.conn:disconnect(message)
@@ -110,7 +112,7 @@ function mt_irc:disconnect(message)
 end
 
 
-function mt_irc:say(to, message)
+function irc:say(to, message)
 	if not message then
 		message = to
 		to = self.config.channel
@@ -121,18 +123,18 @@ function mt_irc:say(to, message)
 end
 
 
-function mt_irc:reply(message)
+function irc:reply(message)
 	if not self.last_from then
 		return
 	end
 	self:say(self.last_from, message)
 end
 
-function mt_irc:send(msg)
+function irc:send(msg)
 	self.conn:send(msg)
 end
 
-function mt_irc:queue(msg)
+function irc:queue(msg)
 	self.conn:queue(msg)
 end
 

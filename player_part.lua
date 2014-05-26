@@ -2,7 +2,7 @@
 -- See LICENSE.txt for details.
 
 
-function mt_irc:player_part(name)
+function irc:player_part(name)
 	if not self.joined_players[name] then
 		minetest.chat_send_player(name, "IRC: You are not in the channel.")
 		return
@@ -11,7 +11,7 @@ function mt_irc:player_part(name)
 	minetest.chat_send_player(name, "IRC: You are now out of the channel.")
 end
  
-function mt_irc:player_join(name)
+function irc:player_join(name)
 	if self.joined_players[name] then
 		minetest.chat_send_player(name, "IRC: You are already in the channel.")
 		return
@@ -25,7 +25,7 @@ minetest.register_chatcommand("join", {
 	description = "Join the IRC channel",
 	privs = {shout=true},
 	func = function(name, param)
-		mt_irc:player_join(name)
+		irc:player_join(name)
 	end
 })
  
@@ -33,7 +33,7 @@ minetest.register_chatcommand("part", {
 	description = "Part the IRC channel",
 	privs = {shout=true},
 	func = function(name, param)
-		mt_irc:player_part(name)
+		irc:player_part(name)
 	end
 })
  
@@ -42,7 +42,7 @@ minetest.register_chatcommand("who", {
 	privs = {},
 	func = function(name, param)
 		local s = ""
-		for name, _ in pairs(mt_irc.joined_players) do
+		for name, _ in pairs(irc.joined_players) do
 			s = s..", "..name
 		end
 		minetest.chat_send_player(name, "Players On Channel:"..s)
@@ -52,16 +52,16 @@ minetest.register_chatcommand("who", {
  
 minetest.register_on_joinplayer(function(player)
 	local name = player:get_player_name()
-	mt_irc.joined_players[name] = mt_irc.config.auto_join
+	irc.joined_players[name] = irc.config.auto_join
 end)
  
  
 minetest.register_on_leaveplayer(function(player)
 	local name = player:get_player_name()
-	mt_irc.joined_players[name] = nil
+	irc.joined_players[name] = nil
 end)
 
-function mt_irc:sendLocal(message)
+function irc:sendLocal(message)
         for name, _ in pairs(self.joined_players) do
 		minetest.chat_send_player(name, message)
 	end

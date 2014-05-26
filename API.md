@@ -1,24 +1,26 @@
 IRC Mod API
------------
+===========
+
 This file documents the Minetest IRC mod API.
 
-BASICS
+Basics
 ------
-In order to allow your mod to interface with this mod, you must add 'irc'
- (without the quotes) to your mod's 'depends.txt' file.
+
+In order to allow your mod to interface with this mod, you must add `irc`
+to your mod's `depends.txt` file.
 
 
-REFERENCE
+Reference
 ---------
 
-mt_irc:say([name, ]message)
+irc:say([name,] message)
 Sends <message> to either the channel (if <name> is nil or not specified),
 or to the given user (if <name> is specified).
 Example:
-	mt_irc:say("Hello, Channel!")
-	mt_irc:say("john1234", "How are you?")
+	irc:say("Hello, Channel!")
+	irc:say("john1234", "How are you?")
 
-mt_irc:register_bot_command(name, cmdDef)
+irc:register_bot_command(name, cmdDef)
 	Registers a new bot command named <name>.
 	When an user sends a private message to the bot with the command name, the
 	command's function is called.
@@ -35,29 +37,29 @@ mt_irc:register_bot_command(name, cmdDef)
 		end,
 	};
 	Example:
-	mt_irc:register_bot_command("hello", {
+	irc:register_bot_command("hello", {
 		params = "",
 		description = "Greet user",
 		func = function(user, param)
-			mt_irc:say(user.nick, "Hello!")
+			irc:say(user.nick, "Hello!")
 		end,
 	});
 
-mt_irc.joined_players[name]
+irc.joined_players[name]
 	This table holds the players who are currently on the channel (may be less
 	than the players in the game). It is modified by the /part and /join chat
 	commands.
 	Example:
-	if mt_irc.joined_players["joe"] then
+	if irc.joined_players["joe"] then
 		-- Joe is talking on IRC
 	end
 
-mt_irc:register_hook(name, func)
+irc:register_hook(name, func)
 	Registers a function to be called when an event happens. <name> is the name
 	of the event, and <func> is the function to be called. See HOOKS below
 	for more information
 	Example:
-	mt_irc:register_hook("OnSend", function(line)
+	irc:register_hook("OnSend", function(line)
 		print("SEND: "..line)
 	end)
 
@@ -69,18 +71,18 @@ string.expandvars(string, vars)
 	are left verbatim in the string.
 	Example:
 	local tpl = "$(foo) $(bar) $(baz)"
-	local s = tpl:expandvars({ foo=1, bar="Hello" })
+	local s = tpl:expandvars({foo=1, bar="Hello"})
 	assert(s == "1 Hello $(baz)") 
 
-In addition, all the configuration options decribed in `README.txt' are
-available to other mods, though they should be considered "read only". Do
-not modify these settings at runtime or you will most likely crash the
-server!
+In addition, all the configuration options decribed in `README.txt` are
+available to other mods, though they should be considered read-only. Do
+not modify these settings at runtime or you might crash the server!
 
 
-HOOKS
----------
-The 'mt_irc:register_hook' function can register functions to be called
+Hooks
+-----
+
+The `irc:register_hook` function can register functions to be called
 when some events happen. The events supported are the same as the LuaIRC
 ones with a few added (mostly for internal use).
 See src/LuaIRC/doc/irc.luadoc for more information.
