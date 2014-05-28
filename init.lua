@@ -76,7 +76,7 @@ function irc:connect()
 		realname = "Minetest",
 	})
 	self:doHook(self.conn)
-	good, message = pcall(function()
+	local good, message = pcall(function()
 		self.conn:connect({
 			host = self.config.server,
 			port = self.config.port,
