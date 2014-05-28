@@ -80,7 +80,7 @@ function irc:connect()
 		self.conn:connect({
 			host = self.config.server,
 			port = self.config.port,
-			pass = self.config.password,
+			password = self.config.password,
 			timeout = self.config.timeout,
 			secure = self.config.secure
 		})
