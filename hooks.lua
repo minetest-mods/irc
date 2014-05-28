@@ -1,6 +1,8 @@
 -- This file is licensed under the terms of the BSD 2-clause license.
 -- See LICENSE.txt for details.
 
+-- MIME is part of LuaSocket
+local b64e = require("mime").b64
 
 irc.hooks = {}
 irc.registered_hooks = {}
@@ -213,7 +215,7 @@ end
 
 function irc.hooks.preregister(conn)
 	if not (irc.config["sasl.user"] and irc.config["sasl.pass"]) then return end
-	local authString = irc.b64e(
+	local authString = b64e(
 		("%s\x00%s\x00%s"):format(
 		irc.config["sasl.user"],
 		irc.config["sasl.user"],

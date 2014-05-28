@@ -30,7 +30,6 @@ dofile(modpath.."/hooks.lua")
 dofile(modpath.."/callback.lua")
 dofile(modpath.."/chatcmds.lua")
 dofile(modpath.."/botcmds.lua")
-dofile(modpath.."/util.lua")
 if irc.config.enable_player_part then
 	dofile(modpath.."/player_part.lua")
 else
