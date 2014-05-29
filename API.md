@@ -25,25 +25,26 @@ irc:register_bot_command(name, cmdDef)
 	When an user sends a private message to the bot with the command name, the
 	command's function is called.
 	Here's the format of a command definition (<cmdDef>):
-	cmdDef = {
-		params = "<param1> ...",      -- A description of the command's parameters
-		description = "My command",   -- A description of what the command does. (one-liner)
-		func = function(user, param)
-			-- This function gets called when the command is invoked.
-			-- <user> is a user table for the user that ran the command.
-			--   (See the LuaIRC documentation for details.)
-			--   It contains fields such as 'nick' and 'ident'
-			-- <param> is a string of parameters to the command (may be "")
-		end,
-	};
+		cmdDef = {
+			params = "<param1> ...",      -- A description of the command's parameters
+			description = "My command",   -- A description of what the command does. (one-liner)
+			func = function(user, args)
+				-- This function gets called when the command is invoked.
+				-- <user> is a user table for the user that ran the command.
+				--   (See the LuaIRC documentation for details.)
+				--   It contains fields such as 'nick' and 'ident'
+				-- <args> is a string of arguments to the command (may be "")
+				-- This function should return boolean success and a message.
+			end,
+		};
 	Example:
-	irc:register_bot_command("hello", {
-		params = "",
-		description = "Greet user",
-		func = function(user, param)
-			irc:say(user.nick, "Hello!")
-		end,
-	});
+		irc:register_bot_command("hello", {
+			params = "",
+			description = "Greet user",
+			func = function(user, param)
+				return true, "Hello!"
+			end,
+		});
 
 irc.joined_players[name]
 	This table holds the players who are currently on the channel (may be less

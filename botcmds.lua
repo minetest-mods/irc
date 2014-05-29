@@ -52,7 +52,10 @@ function irc:bot_command(msg, text)
 		return
 	end
  
-	self.bot_commands[cmd].func(msg.user, args)
+	local success, message = self.bot_commands[cmd].func(msg.user, args)
+	if message then
+		self:reply(message)
+	end
 end
 
 
@@ -71,21 +74,19 @@ irc:register_bot_command("help", {
 	description = "Get help about a command",
 	func = function(user, args)
 		if args == "" then
-			irc:reply("No command name specified. Use 'list' for a list of commands")
-			return
+			return false, "No command name specified. Use 'list' for a list of commands."
 		end
 
 		local cmd = irc.bot_commands[args]
 		if not cmd then
-			irc:reply("Unknown command '"..cmdname.."'.")
-			return
+			return false, "Unknown command '"..cmdname.."'."
 		end
 
-		irc:reply(("Usage: %c%s %s -- %s"):format(
+		return true, ("Usage: %c%s %s -- %s"):format(
 				irc.config.command_prefix,
 				args,
 				cmd.params or "<no parameters>",
-				cmd.description or "<no description>"))
+				cmd.description or "<no description>")
 	end
 })
 
@@ -98,8 +99,8 @@ irc:register_bot_command("list", {
 		for name, cmd in pairs(irc.bot_commands) do
 			cmdlist = cmdlist..name..", "
 		end
-		irc:reply(cmdlist.." -- Use 'help <command name>' to get"
-			.." help about a specific command.")
+		return true, cmdlist.." -- Use 'help <command name>' to get"
+			.." help about a specific command."
 	end
 })
 
@@ -109,17 +110,15 @@ irc:register_bot_command("whereis", {
 	description = "Tell the location of <player>",
 	func = function(user, args)
 		if args == "" then
-			irc:bot_help(user, "whereis")
-			return
+			return false, "Player name required."
 		end
-		local player = minetest.env:get_player_by_name(args)
-		if player then
-			local fmt = "Player %s is at (%.2f,%.2f,%.2f)"
-			local pos = player:getpos()
-			irc:reply(fmt:format(args, pos.x, pos.y, pos.z))
-			return
+		local player = minetest.get_player_by_name(args)
+		if not player then
+			return false, "There is no player named '"..args.."'"
 		end
-		irc:reply("There is no player named '"..args.."'")
+		local fmt = "Player %s is at (%.2f,%.2f,%.2f)"
+		local pos = player:getpos()
+		return true, fmt:format(args, pos.x, pos.y, pos.z)
 	end
 })
 
@@ -131,11 +130,11 @@ irc:register_bot_command("uptime", {
 		local cur_time = os.time()
 		local diff = os.difftime(cur_time, starttime)
 		local fmt = "Server has been running for %d:%02d:%02d"
-		irc:reply(fmt:format(
+		return true, fmt:format(
 			math.floor(diff / 60 / 60),
-			math.mod(math.floor(diff / 60), 60),
-			math.mod(math.floor(diff), 60)
-		))
+			math.floor(diff / 60) % 60,
+			math.floor(diff) % 60
+		)
 	end
 })
 
@@ -148,8 +147,8 @@ irc:register_bot_command("players", {
 		for _, player in pairs(players) do
 			table.insert(names, player:get_player_name())
 		end
-		irc:reply("Connected players: "
-				..table.concat(names, ", "))
+		return true, "Connected players: "
+				..table.concat(names, ", ")
 	end
 })
 
