@@ -4,11 +4,11 @@
 local modpath = minetest.get_modpath(minetest.get_current_modname())
 
 package.path =
-		package.path..";"
 		-- To find LuaIRC's init.lua
-		..modpath.."/?/init.lua;"
+		modpath.."/?/init.lua;"
 		-- For LuaIRC to find its files
-		..modpath.."/?.lua"
+		..modpath.."/?.lua;"
+		..package.path
 
 irc = {
 	version = "0.2.0",
