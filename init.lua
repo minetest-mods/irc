@@ -126,6 +126,7 @@ function irc:reply(message)
 	if not self.last_from then
 		return
 	end
+	message = message:gsub("[\r\n%z]", " \\n ")
 	self:say(self.last_from, message)
 end
 
