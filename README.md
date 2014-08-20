@@ -35,8 +35,8 @@ Arch Linux:
 
 Ubuntu (tested on 14.04):
 
-        # apt-get install luarocks
-        # luarocks install luasocket
+	# apt-get install luarocks
+	# luarocks install luasocket
 
 Settings
 --------
