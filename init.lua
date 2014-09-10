@@ -10,6 +10,17 @@ package.path =
 		..modpath.."/?.lua;"
 		..package.path
 
+-- The build of Lua that Minetest comes with only looks for libraries under
+-- /usr/local/share and /usr/local/lib but LuaSocket is often installed under
+-- /usr/share and /usr/lib.
+if not jit and package.config:sub(1, 1) == "/" then
+	package.path = package.path..
+			";/usr/share/lua/5.1/?.lua"..
+			";/usr/share/lua/5.1/?/init.lua"
+	package.cpath = package.cpath..
+			";/usr/lib/lua/5.1/?.so"
+end
+
 irc = {
 	version = "0.2.0",
 	connected = false,
