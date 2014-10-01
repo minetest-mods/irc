@@ -69,6 +69,14 @@ function irc.hooks.chat(msg)
 end
 
 
+local function get_core_version()
+	local status = minetest.get_server_status()
+	local start_pos = select(2, status:find("version=", 1, true))
+	local end_pos = status:find(",", start_pos, true)
+	return status:sub(start_pos + 1, end_pos - 1)
+end
+
+
 function irc.hooks.ctcp(msg)
 	local text = msg.args[2]:sub(2, -2)  -- Remove ^C
 	local args = text:split(' ')
@@ -83,8 +91,8 @@ function irc.hooks.ctcp(msg)
 		local action = text:sub(8, -1)
 		irc:sendLocal(("* %s@IRC %s"):format(msg.user.nick, action))
 	elseif command == "VERSION" then
-		reply(("Minetest IRC mod version %s.")
-			:format(irc.version))
+		reply(("Minetest version %s, IRC mod version %s.")
+			:format(get_core_version(), irc.version))
 	elseif command == "PING" then
 		reply(args[2])
 	elseif command == "TIME" then
