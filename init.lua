@@ -122,6 +122,18 @@ function irc:disconnect(message)
 end
 
 
+-- Split messages into smaller messages of this size to avoid cutting
+-- off large messages at the end.
+-- Note: RFC 2812 specifies a maximum of 512 characters per "line"
+-- (that includes the command, parameter(s), and the "\r\n" at the
+-- end). We just use a smaller number to avoid having to compute the
+-- actual max length ourselves, and because it makes it a nice round
+-- number :)
+local MESSAGE_CHUNK_SIZE = 400
+
+-- Maximum message size processed.
+local MESSAGE_MAX_SIZE = MESSAGE_CHUNK_SIZE * 4
+
 function irc:say(to, message)
 	if not message then
 		message = to
@@ -129,7 +141,20 @@ function irc:say(to, message)
 	end
 	to = to or self.config.channel
 
-	self:queue(irc.msgs.privmsg(to, message))
+	message = message:sub(1, MESSAGE_MAX_SIZE)
+
+	-- Split the message into MESSAGE_CHUNK_SIZE chunks and queue each
+	-- chunk as a separate message. The message is split into at most
+	-- MAX_CHUNKS chunks. The rest of the message is dropped to prevent
+	-- flooding and/or locking up the server.
+	local msglen = #message
+	for pos = 1, msglen, MESSAGE_CHUNK_SIZE do
+		-- If we have more text to show, indicate so by appending an
+		-- ellipsis to this line.
+		local endl = (pos <= (msglen - MESSAGE_CHUNK_SIZE)) and "\2[…more…]\2" or ""
+		self:queue(irc.msgs.privmsg(to,
+				message:sub(pos, pos + MESSAGE_CHUNK_SIZE - 1)..endl))
+	end
 end
 
 
