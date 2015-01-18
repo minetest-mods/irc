@@ -45,6 +45,10 @@ minetest.register_chatcommand("irc_names", {
 	params = "",
 	description = "List the users in IRC.",
 	func = function(name, params)
+		if not irc.connected then
+			minetest.chat_send_player(name, "Not connected to IRC. Use /irc_connect to connect.")
+			return
+		end
 		local users = { }
 		for k, v in pairs(irc.conn.channels[irc.config.channel].users) do
 			table.insert(users, k)
