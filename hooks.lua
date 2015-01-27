@@ -104,6 +104,14 @@ end
 function irc.hooks.channelChat(msg)
 	local text = normalize(msg.args[2])
 
+	irc:check_botcmd(msg)
+
+	-- Don't let a user impersonate someone else by using the nick "IRC"
+	if msg.user.nick == "IRC" then
+		irc:sendLocal("<IRC@IRC> "..text)
+		return
+	end
+
 	-- Support multiple servers in a channel better by converting:
 	-- "<server@IRC> <player> message" into "<player@server> message"
 	-- "<server@IRC> *** player joined/left the game" into "*** player joined/left server"
@@ -116,8 +124,6 @@ function irc.hooks.channelChat(msg)
 		text:find("^%*%*%* ([^%s]+) left the game$")
 	local foundaction, _, actionnick, actionmessage =
 		text:find("^%* ([^%s]+) (.*)$")
-
-	irc:check_botcmd(msg)
 
 	if text:sub(1, 5) == "[off]" then
 		return
