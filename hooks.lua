@@ -238,7 +238,7 @@ function irc.hooks.preregister(conn)
 	conn:send("CAP REQ sasl")
 	conn:send("AUTHENTICATE PLAIN")
 	conn:send("AUTHENTICATE "..authString)
-	--LuaIRC will send CAP END
+	conn:send("CAP END")
 end
 
 
