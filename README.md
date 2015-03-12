@@ -25,10 +25,18 @@ every time that a submodule is updated.  These steps can be combined as
 `git submodule update --init`.
 
 The Minetest IRC mod also requires LuaSocket.  This can be installed using your
-package manager on many distributions, for example on Arch Linux:
+package manager on many distributions.
+
+Some examples:
+
+Arch Linux:
 
 	# pacman -S lua51-socket
 
+Ubuntu (tested on 14.04):
+
+	# apt-get install luarocks
+	# luarocks install luasocket
 
 Settings
 --------
