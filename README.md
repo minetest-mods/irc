@@ -12,27 +12,31 @@ The forum topic is at http://minetest.net/forum/viewtopic.php?id=3905
 Installing
 ----------
 
-Quick one line install for linux:
+Quick one line install for Linux:
 
-	cd <Mod directory> && git clone https://github.com/kaeza/minetest-irc.git irc && cd irc && git submodule update --init
+	cd <Mods directory> && git clone --recursive https://github.com/kaeza/minetest-irc.git irc
 
-Please change `<Mod directory>` to fit your installation of minetest.
+Please change `<Mod directory>` to fit your installation of Minetest.
 For more information, see [the wiki](http://wiki.minetest.net/Installing_mods).
 
 The Minetest IRC mod uses submodules, therefore you will have to run
 `git submodule init` when first installing the mod, and `git submodule update`
-every time that a submodule is updated.  These steps can be combined as
+every time that a submodule is updated. These steps can be combined as
 `git submodule update --init`.
 
-The Minetest IRC mod also requires LuaSocket.  This can be installed using your
+The Minetest IRC mod also requires LuaSocket. This can be installed using your
 package manager on many distributions, for example on Arch Linux:
 
 	# pacman -S lua51-socket
+	
+Or on Debian/Ubuntu:
+
+	# apt-get install lua-socket
 
 
 Settings
 --------
-All settings are changed in `minetest.conf`. If any of these settings
+**All settings are changed in `minetest.conf`.** If any of these settings
 are not set, the default value is used.
 
   * `irc.server` (string, default "irc.freenode.net")
@@ -84,8 +88,7 @@ are not set, the default value is used.
 Usage
 -----
 
-Once the game is connected to the IRC channel, chatting using the 'T' or
-F10 hotkeys will send the messages to the channel, and will be visible
+Once the game is connected to the IRC channel, chatting from the chat dialog or the console will send the messages to the channel, and will be visible
 by anyone. Also, when someone sends a message to the channel, that text
 will be visible in-game.
 
@@ -145,13 +148,13 @@ Forums and on the #minetest channel. In no particular order:
 vortexlabs/mrtux, marveidemanis, marktraceur, jmf/john\_minetest,
 sdzen/Muadtralk, VanessaE, PilzAdam, sfan5, celeron55, KikaRz,
 OldCoder, RealBadAngel, and all the people who commented in the
-forum topic. Thanks to you all!
+forum topic. **Thanks to you all!**
 
 
 License
 -------
 
-(C) 2012-2013 Diego Martínez <kaeza@users.sf.net>
+Copyright (C) 2012-2013 Diego Martínez <kaeza@users.sf.net>
 
 See LICENSE.txt for licensing information.
 
