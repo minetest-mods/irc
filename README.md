@@ -32,6 +32,11 @@ many distributions, for example:
 	# # On Debian/Ubuntu:
 	# apt-get install lua-socket
 
+You will also need to add IRC to your trusted mods if you haven't disabled mod
+security.  Here's an example configuration line:
+
+	secure.trusted_mods = irc
+
 
 Settings
 --------
