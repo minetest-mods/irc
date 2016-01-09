@@ -30,7 +30,9 @@ many distributions, for example:
 	# # On Arch Linux:
 	# pacman -S lua51-socket
 	# # On Debian/Ubuntu:
-	# apt-get install lua-socket
+	# # Debian/Ubuntu's LuaSocket packages are broken, so use LuaRocks.
+	# apt-get install luarocks
+	# luarocks install luasocket
 
 You will also need to add IRC to your trusted mods if you haven't disabled mod
 security.  Here's an example configuration line:
