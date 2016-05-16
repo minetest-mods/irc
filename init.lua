@@ -107,6 +107,7 @@ function irc:connect()
 			port = self.config.port,
 			password = self.config.password,
 			timeout = self.config.timeout,
+			reconnect = self.config.reconnect,
 			secure = self.config.secure
 		})
 	end)
@@ -114,7 +115,7 @@ function irc:connect()
 	if not good then
 		minetest.log("error", ("IRC: Connection error: %s: %s -- Reconnecting in ten minutes...")
 					:format(self.config.server, message))
-		minetest.after(600, function() self:connect() end)
+		minetest.after(reconnect, function() self:connect() end)
 		return
 	end
 
