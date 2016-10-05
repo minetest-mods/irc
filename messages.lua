@@ -5,6 +5,7 @@ irc.msgs = irc.lib.msgs
 
 function irc:sendLocal(message)
 	minetest.chat_send_all(message)
+	minetest.debug("IRC CHAT: "..message)
 end
 
 function irc:playerMessage(name, message)
