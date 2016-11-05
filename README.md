@@ -14,7 +14,7 @@ Installing
 
 Quick one line install for Linux:
 
-	cd <Mods directory> && git clone --recursive https://github.com/kaeza/minetest-irc.git irc
+	cd <Mods directory> && git clone --recursive https://github.com/minetest-mods/irc.git
 
 Please change `<Mods directory>` to fit your installation of Minetest.
 For more information, see [the wiki](http://wiki.minetest.net/Installing_mods).
