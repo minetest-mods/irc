@@ -9,7 +9,7 @@ function irc:logChat(message, name)
 	else
 		name = ""
 	end
-	minetest.log("action","IRC CHAT"..name..": "..message)
+	minetest.log("action", "IRC CHAT"..name..": "..message)
 end
 
 function irc:sendLocal(message)
