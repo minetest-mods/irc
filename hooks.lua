@@ -160,9 +160,7 @@ end
 
 function irc.hooks.kick(channel, target, prefix, reason)
 	if target == irc.conn.nick then
-		local message = "IRC: kicked from "..channel.." by "..prefix.nick.."."
-		minetest.chat_send_all(message)
-		irc:logChat(message)
+		minetest.chat_send_all("IRC: kicked from "..channel.." by "..prefix.nick..".")
 		irc:disconnect("Kicked")
 	else
 		irc:sendLocal(("-!- %s was kicked from %s by %s [%s]")
