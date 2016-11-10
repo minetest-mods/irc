@@ -34,7 +34,6 @@ end
 local old_require = require
 require = ie.require
 local lib = ie.require("irc")
-require = old_require
 
 irc = {
 	version = "0.2.0",
@@ -56,6 +55,10 @@ loadfile(modpath.."/hooks.lua")(ie)
 dofile(modpath.."/callback.lua")
 dofile(modpath.."/chatcmds.lua")
 dofile(modpath.."/botcmds.lua")
+
+-- Restore old (safe) require
+require = old_require
+
 if irc.config.enable_player_part then
 	dofile(modpath.."/player_part.lua")
 else
