@@ -1,0 +1,72 @@
+
+[Basic]
+
+# Whether to automatically connect to the server on mod load.
+# If false, you must use /irc_connect to connect.
+irc.auto_connect (Auto-connect on load) bool true
+
+# Nickname for the bot. May only contain characters A-Z, 0-9
+# '{', '}', '[', ']', '|', '^', '-', or '_'.
+irc.nick (Bot nickname) string Minetest
+
+# Server to connect to.
+irc.server (IRC server) string irc.freenode.net
+
+# Server port.
+# The standard IRC protocol port is 6667 for regular servers,
+# or 6697 for SSL-enabled servers.
+# If unsure, leave at 6667.
+irc.port (IRC server port) int 6667 1 65535
+
+# Channel the bot joins after connecting.
+irc.channel (Channel to join) string ##mt-irc-mod
+
+[Authentication]
+
+# Password for authenticating to NickServ.
+# Leave empty to not authenticate with NickServ.
+irc.NSPass (NickServ password) string
+
+# IRC server password.
+# Leave empty for no password.
+irc.password (Server password) string
+
+# Password for joining the channel.
+# Leave empty if your channel is not protected.
+irc.key (Channel key) string
+
+# Enable TLS connection.
+# Requires LuaSEC <https://github.com/brunoos/luasec>.
+irc.secure (Use TLS) bool false
+
+# Username for SASL authentication.
+# Leave empty to use the nickname.
+irc.sasl.user (SASL username) string
+
+# Password for SASL authentication.
+# Leave empty to not authenticate via SASL.
+irc.sasl.pass (SASL password) string
+
+[Advanced]
+
+# Enable this to make the bot send messages when players join
+# or leave the game server.
+irc.send_join_part (Send join and part messages) bool true
+
+# Underlying socket timeout in seconds.
+irc.timeout (Timeout) int 60 1
+
+# Time between reconnection attempts, in seconds.
+irc.reconnect (Reconnect delay) int 600 1
+
+# Prefix to use for bot commands.
+irc.command_prefix (Command prefix) string
+
+# Enable debug output.
+irc.debug (Debug mode) bool false
+
+# Whether to enable players joining and parting the channel.
+irc.enable_player_part (Allow player join/part) bool true
+
+# Whether to automatically show players in the channel when they join.
+irc.auto_join (Auto join players) bool true
