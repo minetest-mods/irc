@@ -1,15 +1,30 @@
 
 irc.bot_commands = {}
 
+-- From RFC1459:
+-- "Because of IRC’s scandanavian origin, the characters {}| are
+--  considered to be the lower case equivalents of the characters
+--  []\, respectively."
+local irctolower = { ["["]="{", ["\\"]="|", ["]"]="}" }
+
+local function irclower(s)
+	return (s:lower():gsub("[%[%]\\]", irctolower))
+end
+
+local function nickequals(nick1, nick2)
+	return irclower(nick1) == irclower(nick2)
+end
+
 function irc:check_botcmd(msg)
 	local prefix = irc.config.command_prefix
-	local nick = irc.conn.nick:lower()
+	local nick = irc.conn.nick
 	local text = msg.args[2]
-	local nickpart = text:sub(1, #nick + 2):lower()
+	local nickpart = text:sub(1, #nick)
+	local suffix = text:sub(#nick+1, #nick+2)
 
 	-- First check for a nick prefix
-	if nickpart == nick..": " or
-	   nickpart == nick..", " then
+	if nickequals(nickpart, nick)
+			and (suffix == ": " or suffix == ", ") then
 		self:bot_command(msg, text:sub(#nick + 3))
 		return true
 	-- Then check for the configured prefix
