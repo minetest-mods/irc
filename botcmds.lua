@@ -89,7 +89,13 @@ irc:register_bot_command("help", {
 	description = "Get help about a command",
 	func = function(user, args)
 		if args == "" then
-			return false, "No command name specified. Use 'list' for a list of commands."
+			local cmdlist = { }
+			for name, cmd in pairs(irc.bot_commands) do
+				cmdlist[#cmdlist+1] = name
+			end
+			return true, "Available commands: "..table.concat(cmdlist, ", ")
+					.." -- Use 'help <command name>' to get"
+					.." help about a specific command."
 		end
 
 		local cmd = irc.bot_commands[args]
@@ -110,12 +116,8 @@ irc:register_bot_command("list", {
 	params = "",
 	description = "List available commands.",
 	func = function(user, args)
-		local cmdlist = "Available commands: "
-		for name, cmd in pairs(irc.bot_commands) do
-			cmdlist = cmdlist..name..", "
-		end
-		return true, cmdlist.." -- Use 'help <command name>' to get"
-			.." help about a specific command."
+		return false, "The `list` command has been merged into `help`."
+				.." Use `help` with no arguments to get a list."
 	end
 })
 
