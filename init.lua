@@ -33,6 +33,11 @@ end
 -- Temporarily set require so that LuaIRC can access it
 local old_require = require
 require = ie.require
+
+-- Silence warnings about `module` in `ltn12`.
+local old_module = rawget(_G, "module")
+rawset(_G, "module", ie.module)
+
 local lib = ie.require("irc")
 
 irc = {
@@ -56,8 +61,9 @@ dofile(modpath.."/callback.lua")
 dofile(modpath.."/chatcmds.lua")
 dofile(modpath.."/botcmds.lua")
 
--- Restore old (safe) require
+-- Restore old (safe) functions
 require = old_require
+rawset(_G, "module", old_module)
 
 if irc.config.enable_player_part then
 	dofile(modpath.."/player_part.lua")
