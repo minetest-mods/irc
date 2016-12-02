@@ -129,7 +129,8 @@ function irc:connect()
 	end
 
 	if self.config.NSPass then
-		self:say("NickServ", "IDENTIFY "..self.config.NSPass)
+		self.conn:queue(irc.msgs.privmsg(
+				"NickServ", "IDENTIFY "..self.config.NSPass))
 	end
 
 	self.conn:join(self.config.channel, self.config.key)
