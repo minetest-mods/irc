@@ -100,11 +100,11 @@ irc:register_bot_command("help", {
 
 		local cmd = irc.bot_commands[args]
 		if not cmd then
-			return false, "Unknown command '"..cmdname.."'."
+			return false, "Unknown command '"..args.."'."
 		end
 
-		return true, ("Usage: %c%s %s -- %s"):format(
-				irc.config.command_prefix,
+		return true, ("Usage: %s%s %s -- %s"):format(
+				irc.config.command_prefix or "",
 				args,
 				cmd.params or "<no parameters>",
 				cmd.description or "<no description>")
