@@ -110,11 +110,13 @@ function irc:connect()
 		realname = "Minetest",
 	})
 	self:doHook(self.conn)
+
+	-- We need to swap the `require` function again since
+	-- LuaIRC `require`s `ssl` if `irc.secure` is true.
+	local old_require = require
+	require = ie.require
+
 	local good, message = pcall(function()
-		-- We need to swap the `require` function again since
-		-- LuaIRC `require`s `ssl` if `irc.secure` is true.
-		local old_require = require
-		require = ie.require
 		self.conn:connect({
 			host = self.config.server,
 			port = self.config.port,
@@ -123,8 +125,9 @@ function irc:connect()
 			reconnect = self.config.reconnect,
 			secure = self.config.secure
 		})
-		require = old_require
 	end)
+
+	require = old_require
 
 	if not good then
 		minetest.log("error", ("IRC: Connection error: %s: %s -- Reconnecting in %d seconds...")
