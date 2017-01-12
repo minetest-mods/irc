@@ -10,12 +10,7 @@ irc.hooks = {}
 irc.registered_hooks = {}
 
 
--- TODO: Add proper conversion from CP1252 to UTF-8.
-local stripped_chars = {"\2", "\31"}
-for c = 127, 255 do
-	table.insert(stripped_chars, string.char(c))
-end
-stripped_chars = "["..table.concat(stripped_chars, "").."]"
+local stripped_chars = "[\2\31]"
 
 local function normalize(text)
 	-- Strip colors
