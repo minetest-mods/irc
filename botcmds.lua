@@ -37,6 +37,8 @@ end
 
 
 function irc:bot_command(msg, text)
+	-- Remove leading whitespace
+	text = text:match("^%s*(.*)")
 	if text:sub(1, 1) == "@" then
 		local found, _, player_to, message = text:find("^.([^%s]+)%s(.+)$")
 		if not minetest.get_player_by_name(player_to) then
