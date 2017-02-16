@@ -9,7 +9,7 @@ function irc:player_part(name)
 	self.joined_players[name] = nil
 	return true, "You left the channel"
 end
- 
+
 function irc:player_join(name)
 	if self.joined_players[name] then
 		return false, "You are already in the channel"
@@ -26,7 +26,7 @@ minetest.register_chatcommand("join", {
 		return irc:player_join(name)
 	end
 })
- 
+
 minetest.register_chatcommand("part", {
 	description = "Part the IRC channel",
 	privs = {shout=true},
@@ -34,28 +34,28 @@ minetest.register_chatcommand("part", {
 		return irc:player_part(name)
 	end
 })
- 
+
 minetest.register_chatcommand("who", {
 	description = "Tell who is currently on the channel",
 	privs = {},
 	func = function(name, param)
 		local out, n = { }, 0
-		for name in pairs(irc.joined_players) do
+		for plname in pairs(irc.joined_players) do
 			n = n + 1
-			out[n] = name
+			out[n] = plname
 		end
 		table.sort(out)
 		return true, "Players in channel: "..table.concat(out, ", ")
 	end
 })
 
- 
+
 minetest.register_on_joinplayer(function(player)
 	local name = player:get_player_name()
 	irc.joined_players[name] = irc.config.auto_join
 end)
- 
- 
+
+
 minetest.register_on_leaveplayer(function(player)
 	local name = player:get_player_name()
 	irc.joined_players[name] = nil

@@ -40,7 +40,7 @@ function irc:bot_command(msg, text)
 	-- Remove leading whitespace
 	text = text:match("^%s*(.*)")
 	if text:sub(1, 1) == "@" then
-		local found, _, player_to, message = text:find("^.([^%s]+)%s(.+)$")
+		local _, _, player_to, message = text:find("^.([^%s]+)%s(.+)$")
 		if not minetest.get_player_by_name(player_to) then
 			irc:reply("User '"..player_to.."' is not in the game.")
 			return
@@ -62,14 +62,14 @@ function irc:bot_command(msg, text)
 		cmd = text
 		args = ""
 	end
- 
+
 	if not self.bot_commands[cmd] then
 		self:reply("Unknown command '"..cmd.."'. Try 'list'."
 			.." Or use @playername <message> to send a private message")
 		return
 	end
- 
-	local success, message = self.bot_commands[cmd].func(msg.user, args)
+
+	local _, message = self.bot_commands[cmd].func(msg.user, args)
 	if message then
 		self:reply(message)
 	end

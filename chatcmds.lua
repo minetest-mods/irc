@@ -76,8 +76,8 @@ minetest.register_chatcommand("irc_disconnect", {
 		if not irc.connected then
 			return false, "Not connected to IRC. Use /irc_connect to connect."
 		end
-		if params == "" then
-			params = "Manual disconnect by "..name
+		if param == "" then
+			param = "Manual disconnect by "..name
 		end
 		irc:disconnect(param)
 	end
@@ -113,6 +113,7 @@ minetest.register_chatcommand("irc_quote", {
 
 
 local oldme = minetest.chatcommands["me"].func
+-- luacheck: ignore
 minetest.chatcommands["me"].func = function(name, param, ...)
 	irc:say(("* %s %s"):format(name, param))
 	return oldme(name, param, ...)

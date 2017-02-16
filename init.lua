@@ -52,7 +52,7 @@ irc = {
 }
 
 -- Compatibility
-mt_irc = irc
+rawset(_G, "mt_irc", irc)
 
 dofile(modpath.."/config.lua")
 dofile(modpath.."/messages.lua")
@@ -113,7 +113,7 @@ function irc:connect()
 
 	-- We need to swap the `require` function again since
 	-- LuaIRC `require`s `ssl` if `irc.secure` is true.
-	local old_require = require
+	old_require = require
 	require = ie.require
 
 	local good, message = pcall(function()
