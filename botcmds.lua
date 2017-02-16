@@ -41,7 +41,9 @@ function irc:bot_command(msg, text)
 	text = text:match("^%s*(.*)")
 	if text:sub(1, 1) == "@" then
 		local _, _, player_to, message = text:find("^.([^%s]+)%s(.+)$")
-		if not minetest.get_player_by_name(player_to) then
+		if not player_to then
+			return
+		elseif not minetest.get_player_by_name(player_to) then
 			irc:reply("User '"..player_to.."' is not in the game.")
 			return
 		elseif not irc.joined_players[player_to] then
