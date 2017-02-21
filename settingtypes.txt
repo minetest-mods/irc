@@ -53,6 +53,9 @@ irc.sasl.pass (SASL password) string
 # or leave the game server.
 irc.send_join_part (Send join and part messages) bool true
 
+# Enable this to make the bot send messages when players are kicked.
+irc.send_kicks (Send kick messages) bool false
+
 # Underlying socket timeout in seconds.
 irc.timeout (Timeout) int 60 1
 

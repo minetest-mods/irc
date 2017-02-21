@@ -36,6 +36,7 @@ setting("string", "sasl.pass") -- SASL password
 setting("string", "channel", nil, true) -- Channel to join
 setting("string", "key") -- Key for the channel
 setting("bool",   "send_join_part", true) -- Whether to send player join and part messages to the channel
+setting("bool",   "send_kicks", false) -- Whether to send player kicked messages to the channel
 
 -----------------------
 -- ADVANCED SETTINGS --

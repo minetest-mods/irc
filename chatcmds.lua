@@ -119,3 +119,16 @@ minetest.chatcommands["me"].func = function(name, param, ...)
 	return oldme(name, param, ...)
 end
 
+if irc.config.send_kicks and minetest.chatcommands["kick"] then
+	local oldkick = minetest.chatcommands["kick"].func
+	-- luacheck: ignore
+	minetest.chatcommands["kick"].func = function(name, param, ...)
+		local plname, reason = param:match("^(%S+)%s*(.*)$")
+		if not plname then
+			return false, "Usage: /kick player [reason]"
+		end
+		irc:say(("*** Kicked %s.%s"):format(name,
+				reason~="" and " Reason: "..reason or ""))
+		return oldkick(name, param, ...)
+	end
+end
