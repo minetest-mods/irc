@@ -66,7 +66,7 @@ function irc:bot_command(msg, text)
 	end
 
 	if not self.bot_commands[cmd] then
-		self:reply("Unknown command '"..cmd.."'. Try 'list'."
+		self:reply("Unknown command '"..cmd.."'. Try 'help'."
 			.." Or use @playername <message> to send a private message")
 		return
 	end
