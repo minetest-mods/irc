@@ -54,6 +54,37 @@ irc = {
 -- Compatibility
 rawset(_G, "mt_irc", irc)
 
+local getinfo = debug.getinfo
+local warned = { }
+
+local function warn_deprecated(k)
+	local info = getinfo(3)
+	local loc = info.source..":"..info.currentline
+	if warned[loc] then return end
+	warned[loc] = true
+	print("COLON: "..tostring(k))
+	minetest.log("warning", "Deprecated use of colon notation when calling"
+			.." method `"..tostring(k).."` at "..loc)
+end
+
+-- This is a hack.
+setmetatable(irc, {
+	__newindex = function(t, k, v)
+		if type(v) == "function" then
+			local f = v
+			v = function(me, ...)
+				if rawequal(me, t) then
+					warn_deprecated(k)
+					return f(...)
+				else
+					return f(me, ...)
+				end
+			end
+		end
+		rawset(t, k, v)
+	end,
+})
+
 dofile(modpath.."/config.lua")
 dofile(modpath.."/messages.lua")
 loadfile(modpath.."/hooks.lua")(ie)
@@ -68,7 +99,7 @@ rawset(_G, "module", old_module)
 if irc.config.enable_player_part then
 	dofile(modpath.."/player_part.lua")
 else
-	setmetatable(irc.joined_players, {__index = function(index) return true end})
+	setmetatable(irc.joined_players, {__index = function() return true end})
 end
 
 minetest.register_privilege("irc_admin", {
@@ -78,20 +109,20 @@ minetest.register_privilege("irc_admin", {
 
 local stepnum = 0
 
-minetest.register_globalstep(function(dtime) return irc:step(dtime) end)
+minetest.register_globalstep(function(dtime) return irc.step(dtime) end)
 
-function irc:step(dtime)
+function irc.step()
 	if stepnum == 3 then
-		if self.config.auto_connect then
-			self:connect()
+		if irc.config.auto_connect then
+			irc.connect()
 		end
 	end
 	stepnum = stepnum + 1
 
-	if not self.connected then return end
+	if not irc.connected then return end
 
 	-- Hooks will manage incoming messages and errors
-	local good, err = xpcall(function() self.conn:think() end, debug.traceback)
+	local good, err = xpcall(function() irc.conn:think() end, debug.traceback)
 	if not good then
 		print(err)
 		return
@@ -99,17 +130,17 @@ function irc:step(dtime)
 end
 
 
-function irc:connect()
-	if self.connected then
+function irc.connect()
+	if irc.connected then
 		minetest.log("error", "IRC: Ignoring attempt to connect when already connected.")
 		return
 	end
-	self.conn = irc.lib.new({
-		nick = self.config.nick,
+	irc.conn = irc.lib.new({
+		nick = irc.config.nick,
 		username = "Minetest",
 		realname = "Minetest",
 	})
-	self:doHook(self.conn)
+	irc.doHook(irc.conn)
 
 	-- We need to swap the `require` function again since
 	-- LuaIRC `require`s `ssl` if `irc.secure` is true.
@@ -117,13 +148,13 @@ function irc:connect()
 	require = ie.require
 
 	local good, message = pcall(function()
-		self.conn:connect({
-			host = self.config.server,
-			port = self.config.port,
-			password = self.config.password,
-			timeout = self.config.timeout,
-			reconnect = self.config.reconnect,
-			secure = self.config.secure
+		irc.conn:connect({
+			host = irc.config.server,
+			port = irc.config.port,
+			password = irc.config.password,
+			timeout = irc.config.timeout,
+			reconnect = irc.config.reconnect,
+			secure = irc.config.secure
 		})
 	end)
 
@@ -131,57 +162,57 @@ function irc:connect()
 
 	if not good then
 		minetest.log("error", ("IRC: Connection error: %s: %s -- Reconnecting in %d seconds...")
-					:format(self.config.server, message, self.config.reconnect))
-		minetest.after(self.config.reconnect, function() self:connect() end)
+					:format(irc.config.server, message, irc.config.reconnect))
+		minetest.after(irc.config.reconnect, function() irc.connect() end)
 		return
 	end
 
-	if self.config.NSPass then
-		self.conn:queue(irc.msgs.privmsg(
-				"NickServ", "IDENTIFY "..self.config.NSPass))
+	if irc.config.NSPass then
+		irc.conn:queue(irc.msgs.privmsg(
+				"NickServ", "IDENTIFY "..irc.config.NSPass))
 	end
 
-	self.conn:join(self.config.channel, self.config.key)
-	self.connected = true
+	irc.conn:join(irc.config.channel, irc.config.key)
+	irc.connected = true
 	minetest.log("action", "IRC: Connected!")
 	minetest.chat_send_all("IRC: Connected!")
 end
 
 
-function irc:disconnect(message)
-	if self.connected then
-		--The OnDisconnect hook will clear self.connected and print a disconnect message
-		self.conn:disconnect(message)
+function irc.disconnect(message)
+	if irc.connected then
+		--The OnDisconnect hook will clear irc.connected and print a disconnect message
+		irc.conn:disconnect(message)
 	end
 end
 
 
-function irc:say(to, message)
+function irc.say(to, message)
 	if not message then
 		message = to
-		to = self.config.channel
+		to = irc.config.channel
 	end
-	to = to or self.config.channel
+	to = to or irc.config.channel
 
-	self:queue(irc.msgs.privmsg(to, message))
+	irc.queue(irc.msgs.privmsg(to, message))
 end
 
 
-function irc:reply(message)
-	if not self.last_from then
+function irc.reply(message)
+	if not irc.last_from then
 		return
 	end
 	message = message:gsub("[\r\n%z]", " \\n ")
-	self:say(self.last_from, message)
+	irc.say(irc.last_from, message)
 end
 
-function irc:send(msg)
-	if not self.connected then return end
-	self.conn:send(msg)
+function irc.send(msg)
+	if not irc.connected then return end
+	irc.conn:send(msg)
 end
 
-function irc:queue(msg)
-	if not self.connected then return end
-	self.conn:queue(msg)
+function irc.queue(msg)
+	if not irc.connected then return end
+	irc.conn:queue(msg)
 end
 

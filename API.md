@@ -13,14 +13,14 @@ to your mod's `depends.txt` file.
 Reference
 ---------
 
-irc:say([name,] message)
+irc.say([name,] message)
 Sends <message> to either the channel (if <name> is nil or not specified),
 or to the given user (if <name> is specified).
 Example:
-	irc:say("Hello, Channel!")
-	irc:say("john1234", "How are you?")
+	irc.say("Hello, Channel!")
+	irc.say("john1234", "How are you?")
 
-irc:register_bot_command(name, cmdDef)
+irc.register_bot_command(name, cmdDef)
 	Registers a new bot command named <name>.
 	When an user sends a private message to the bot with the command name, the
 	command's function is called.
@@ -38,7 +38,7 @@ irc:register_bot_command(name, cmdDef)
 			end,
 		};
 	Example:
-		irc:register_bot_command("hello", {
+		irc.register_bot_command("hello", {
 			params = "",
 			description = "Greet user",
 			func = function(user, param)
@@ -55,12 +55,12 @@ irc.joined_players[name]
 		-- Joe is talking on IRC
 	end
 
-irc:register_hook(name, func)
+irc.register_hook(name, func)
 	Registers a function to be called when an event happens. <name> is the name
 	of the event, and <func> is the function to be called. See HOOKS below
 	for more information
 	Example:
-	irc:register_hook("OnSend", function(line)
+	irc.register_hook("OnSend", function(line)
 		print("SEND: "..line)
 	end)
 
@@ -83,7 +83,7 @@ not modify these settings at runtime or you might crash the server!
 Hooks
 -----
 
-The `irc:register_hook` function can register functions to be called
+The `irc.register_hook` function can register functions to be called
 when some events happen. The events supported are the same as the LuaIRC
 ones with a few added (mostly for internal use).
 See src/LuaIRC/doc/irc.luadoc for more information.

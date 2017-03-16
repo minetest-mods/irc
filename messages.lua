@@ -3,15 +3,15 @@
 
 irc.msgs = irc.lib.msgs
 
-function irc:logChat(message)
+function irc.logChat(message)
 	minetest.log("action", "IRC CHAT: "..message)
 end
 
-function irc:sendLocal(message)
+function irc.sendLocal(message)
 	minetest.chat_send_all(message)
-	irc:logChat(message)
+	irc.logChat(message)
 end
 
-function irc:playerMessage(name, message)
+function irc.playerMessage(name, message)
 	return ("<%s> %s"):format(name, message)
 end
