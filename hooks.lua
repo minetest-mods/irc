@@ -104,8 +104,9 @@ function irc.hooks.channelChat(msg)
 	irc:check_botcmd(msg)
 
 	-- Don't let a user impersonate someone else by using the nick "IRC"
-	if msg.user.nick == "IRC" then
-		irc.sendLocal("<IRC@IRC> "..text)
+	local fake = msg.user.nick:lower():match("^[il|]rc$")
+	if fake then
+		irc.sendLocal("<"..msg.user.nick.."@IRC> "..text)
 		return
 	end
 
