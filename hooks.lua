@@ -101,7 +101,7 @@ end
 function irc.hooks.channelChat(msg)
 	local text = normalize(msg.args[2])
 
-	irc:check_botcmd(msg)
+	irc.check_botcmd(msg)
 
 	-- Don't let a user impersonate someone else by using the nick "IRC"
 	local fake = msg.user.nick:lower():match("^[il|]rc$")
