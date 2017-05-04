@@ -9,14 +9,47 @@ local b64e = ie.require("mime").b64
 irc.hooks = {}
 irc.registered_hooks = {}
 
+local colour_codes = {
+	[0] = "white",
+	[1] = "black",
+	[2] = "blue",
+	[3] = "green",
+	[4] = "red",
+	[5] = "darkred",
+	[6] = "purple",
+	[7] = "orange",
+	[8] = "yellow",
+	[9] = "limegreen",
+	[10] = "teal",
+	[11] = "cyan",
+	[12] = "deepskyblue",
+	[13] = "pink",
+	[14] = "grey",
+	[15] = "lightgrey",
+	[99] = "#ffffff"
+}
+
+local function convert_colour(text)
+	local lines = text:split("\3", true)
+	for index, line in pairs(lines) do
+		local irc_code = line:match("^(%d+)")
+		line = line:gsub("^(%d+)", "")
+		local mt_code = colour_codes[tonumber(irc_code)]
+		if mt_code then
+			line = core.get_color_escape_sequence(mt_code) .. line
+		end
+
+		lines[index] = line
+	end
+	return table.concat(lines, "")
+end
 
 local stripped_chars = "[\2\31]"
 
 local function normalize(text)
-	-- Strip colors
-	text = text:gsub("\3[0-9][0-9,]*", "")
-
-	return text:gsub(stripped_chars, "")
+	-- convert colors
+	text = convert_colour(text)
+	return text:gsub(stripped_chars, "") .. core.get_color_escape_sequence("#ffffff")
 end
 
 
@@ -86,7 +119,7 @@ function irc.hooks.ctcp(msg)
 
 	if command == "ACTION" and msg.args[1] == irc.config.channel then
 		local action = text:sub(8, -1)
-		irc.sendLocal(("* %s@IRC %s"):format(msg.user.nick, action))
+		irc.sendLocal(("* %s@IRC %s"):format(msg.user.nick, normalize(action)))
 	elseif command == "VERSION" then
 		reply(("Minetest version %s, IRC mod version %s.")
 			:format(get_core_version(), irc.version))
@@ -99,14 +132,14 @@ end
 
 
 function irc.hooks.channelChat(msg)
-	local text = normalize(msg.args[2])
-
+	local text_coloured = normalize(msg.args[2])
+	local text = core.strip_colors(text_coloured)
 	irc.check_botcmd(msg)
 
 	-- Don't let a user impersonate someone else by using the nick "IRC"
 	local fake = msg.user.nick:lower():match("^[il|]rc$")
 	if fake then
-		irc.sendLocal("<"..msg.user.nick.."@IRC> "..text)
+		irc.sendLocal("<"..msg.user.nick.."@IRC> "..text_coloured)
 		return
 	end
 
@@ -138,7 +171,7 @@ function irc.hooks.channelChat(msg)
 		irc.sendLocal(("* %s@%s %s")
 				:format(actionnick, msg.user.nick, actionmessage))
 	else
-		irc.sendLocal(("<%s@IRC> %s"):format(msg.user.nick, text))
+		irc.sendLocal(("<%s@IRC> %s"):format(msg.user.nick, text_coloured))
 	end
 end
 
@@ -160,14 +193,14 @@ function irc.hooks.kick(channel, target, prefix, reason)
 		irc.disconnect("Kicked")
 	else
 		irc.sendLocal(("-!- %s was kicked from %s by %s [%s]")
-				:format(target, channel, prefix.nick, reason))
+				:format(target, channel, prefix.nick, normalize(reason)))
 	end
 end
 
 
 function irc.hooks.notice(user, target, message)
 	if user.nick and target == irc.config.channel then
-		irc.sendLocal("-"..user.nick.."@IRC- "..message)
+		irc.sendLocal("-"..user.nick.."@IRC- "..normalize(message))
 	end
 end
 
@@ -202,13 +235,13 @@ end
 function irc.hooks.part(user, channel, reason)
 	reason = reason or ""
 	irc.sendLocal(("-!- %s has left %s [%s]")
-			:format(user.nick, channel, reason))
+			:format(user.nick, channel, normalize(reason)))
 end
 
 
 function irc.hooks.quit(user, reason)
 	irc.sendLocal(("-!- %s has quit [%s]")
-			:format(user.nick, reason))
+			:format(user.nick, normalize(reason)))
 end
 
 

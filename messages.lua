@@ -4,7 +4,7 @@
 irc.msgs = irc.lib.msgs
 
 function irc.logChat(message)
-	minetest.log("action", "IRC CHAT: "..message)
+	minetest.log("action", "IRC CHAT: " .. core.strip_colors(message))
 end
 
 function irc.sendLocal(message)

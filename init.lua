@@ -87,7 +87,11 @@ setmetatable(irc, {
 
 dofile(modpath.."/config.lua")
 dofile(modpath.."/messages.lua")
-loadfile(modpath.."/hooks.lua")(ie)
+local chunk, errorval = loadfile(modpath.."/hooks.lua")
+if chunk == nil then
+ error(errorval)
+end
+chunk(ie)
 dofile(modpath.."/callback.lua")
 dofile(modpath.."/chatcmds.lua")
 dofile(modpath.."/botcmds.lua")
