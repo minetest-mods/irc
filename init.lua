@@ -137,8 +137,8 @@ function irc.connect()
 	end
 	irc.conn = irc.lib.new({
 		nick = irc.config.nick,
-		username = "Minetest",
-		realname = "Minetest",
+		username = irc.config.username,
+		realname = irc.config.realname,
 	})
 	irc.doHook(irc.conn)
 

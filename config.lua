@@ -32,6 +32,8 @@ setting("string", "server", nil, true) -- Server address to connect to
 setting("number", "port", 6667) -- Server port to connect to
 setting("string", "NSPass") -- NickServ password
 setting("string", "sasl.user", irc.config.nick) -- SASL username
+setting("string", "username", "Minetest") -- Username/ident
+setting("string", "realname", "Minetest") -- Real name/GECOS
 setting("string", "sasl.pass") -- SASL password
 setting("string", "channel", nil, true) -- Channel to join
 setting("string", "key") -- Key for the channel
