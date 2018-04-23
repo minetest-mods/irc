@@ -8,7 +8,7 @@ function irc.logChat(message)
 end
 
 function irc.sendLocal(message)
-	minetest.chat_send_all(message)
+	minetest.chat_send_all(minetest.colorize("#0099ff", message))
 	irc.logChat(message)
 end
 
