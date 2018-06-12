@@ -7,11 +7,11 @@ irc.config = {}
 local function setting(stype, name, default, required)
 	local value
 	if stype == "bool" then
-		value = minetest.setting_getbool("irc."..name)
+		value = minetest.settings:get_bool("irc."..name)
 	elseif stype == "string" then
-		value = minetest.setting_get("irc."..name)
+		value = minetest.settings:get("irc."..name)
 	elseif stype == "number" then
-		value = tonumber(minetest.setting_get("irc."..name))
+		value = tonumber(minetest.settings:get("irc."..name))
 	end
 	if value == nil then
 		if required then
