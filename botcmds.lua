@@ -51,7 +51,8 @@ function irc.bot_command(msg, text)
 			return
 		end
 		minetest.chat_send_player(player_to,
-				"PM from "..msg.user.nick.."@IRC: "..message, false)
+				minetest.colorize(irc.config.pm_color,
+				"PM from "..msg.user.nick.."@IRC: "..message, false))
 		irc.reply("Message sent!")
 		return
 	end
