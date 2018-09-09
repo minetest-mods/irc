@@ -63,7 +63,8 @@ end)
 
 function irc.sendLocal(message)
 	for name, _ in pairs(irc.joined_players) do
-		minetest.chat_send_player(name, message)
+		minetest.chat_send_player(name,
+					minetest.colorize(irc.config.chat_color, message))
 	end
 	irc.logChat(message)
 end
