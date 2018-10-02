@@ -213,6 +213,5 @@ end
 
 function irc.queue(msg)
 	if not irc.connected then return end
-	irc.conn:queue(msg)
+	irc.conn:queue(msg:sub(1, 512))
 end
-
