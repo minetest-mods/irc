@@ -13,6 +13,8 @@ end
 function irc.player_join(name)
 	if irc.joined_players[name] then
 		return false, "You are already in the channel"
+	elseif not minetest.get_player_by_name(name) then
+		return false, "You need to be in-game to join the channel"
 	end
 	irc.joined_players[name] = true
 	return true, "You joined the channel"
