@@ -23,11 +23,17 @@ ie.package.path =
 -- /usr/local/share and /usr/local/lib but LuaSocket is often installed under
 -- /usr/share and /usr/lib.
 if not rawget(_G, "jit") and package.config:sub(1, 1) == "/" then
+
 	ie.package.path = ie.package.path..
 			";/usr/share/lua/5.1/?.lua"..
 			";/usr/share/lua/5.1/?/init.lua"
+
 	ie.package.cpath = ie.package.cpath..
 			";/usr/lib/lua/5.1/?.so"
+
+	ie.package.cpath = "/usr/lib/x86_64-linux-gnu/lua/5.1/?.so;"..ie.package.cpath
+
+
 end
 
 -- Temporarily set require so that LuaIRC can access it
