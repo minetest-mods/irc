@@ -120,6 +120,8 @@ function irc.hooks.channelChat(msg)
 		text:find("^%*%*%* ([^%s]+) joined the game$")
 	local foundleave, _, leavenick =
 		text:find("^%*%*%* ([^%s]+) left the game$")
+	local foundtimedout, _, timedoutnick =
+		text:find("^%*%*%* ([^%s]+) left the game %(Timed out%)$")
 	local foundaction, _, actionnick, actionmessage =
 		text:find("^%* ([^%s]+) (.*)$")
 
@@ -134,6 +136,9 @@ function irc.hooks.channelChat(msg)
 	elseif foundleave then
 		irc.sendLocal(("*** %s left %s")
 				:format(leavenick, msg.user.nick))
+	elseif foundtimedout then
+		irc.sendLocal(("*** %s left %s (Timed out)")
+				:format(timedoutnick, msg.user.nick))
 	elseif foundaction then
 		irc.sendLocal(("* %s@%s %s")
 				:format(actionnick, msg.user.nick, actionmessage))
