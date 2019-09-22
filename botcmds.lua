@@ -139,7 +139,7 @@ irc.register_bot_command("whereis", {
 			return false, "There is no player named '"..args.."'"
 		end
 		local fmt = "Player %s is at (%.2f,%.2f,%.2f)"
-		local pos = player:getpos()
+		local pos = player:get_pos()
 		return true, fmt:format(args, pos.x, pos.y, pos.z)
 	end
 })

@@ -110,7 +110,8 @@ end
 
 minetest.register_privilege("irc_admin", {
 	description = "Allow IRC administrative tasks to be performed.",
-	give_to_singleplayer = true
+	give_to_singleplayer = true,
+	give_to_admin = true,
 })
 
 local stepnum = 0

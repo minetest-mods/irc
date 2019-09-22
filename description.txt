@@ -1,4 +1,0 @@
-This mod is just a glue between IRC and Minetest.
-
-It provides two-way communication between the
-in-game chat, and an arbitrary IRC channel.
