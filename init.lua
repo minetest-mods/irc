@@ -29,7 +29,8 @@ if not rawget(_G, "jit") and package.config:sub(1, 1) == "/" then
 			";/usr/share/lua/5.1/?/init.lua"
 
 	ie.package.cpath = ie.package.cpath..
-			";/usr/lib/lua/5.1/?.so"
+			";/usr/lib/lua/5.1/?.so"..
+			";/usr/lib64/lua/5.1/?.so"
 
 	ie.package.cpath = "/usr/lib/x86_64-linux-gnu/lua/5.1/?.so;"..ie.package.cpath
 
