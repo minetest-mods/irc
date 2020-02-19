@@ -1,3 +1,4 @@
+[![](https://github.com/minetest-mods/irc/workflows/Check%20&%20Release/badge.svg)](https://github.com/minetest-mods/irc/actions)
 
 IRC Mod for Minetest
 ====================
