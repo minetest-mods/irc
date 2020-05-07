@@ -211,7 +211,7 @@ function irc.reply(message)
 		return
 	end
 	message = message:gsub("[\r\n%z]", " \\n ")
-	irc.say(irc.last_from, message)
+	irc.say(irc.last_from, minetest.strip_colors(message))
 end
 
 function irc.send(msg)
