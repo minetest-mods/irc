@@ -31,7 +31,7 @@ minetest.register_on_chat_message(function(name, message)
 	if nl then
 		message = message:sub(1, nl - 1)
 	end
-	irc.say(irc.playerMessage(name, core.strip_colors(message)))
+	irc.say(irc.playerMessage(name, minetest.strip_colors(message)))
 end)
 
 
