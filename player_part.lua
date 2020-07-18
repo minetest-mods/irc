@@ -47,7 +47,7 @@ minetest.register_chatcommand("who", {
 			out[n] = plname
 		end
 		table.sort(out)
-		return true, "Players in channel: "..table.concat(out, ", ")
+		return true, n.." player(s) in channel: "..table.concat(out, ", ")
 	end
 })
 
