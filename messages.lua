@@ -13,5 +13,5 @@ function irc.sendLocal(message)
 end
 
 function irc.playerMessage(name, message)
-	return ("<%s> %s"):format(name, message)
+	return ("{%s} %s"):format(name, message)
 end
