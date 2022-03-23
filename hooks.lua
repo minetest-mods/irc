@@ -171,7 +171,7 @@ end
 
 
 function irc.hooks.notice(user, target, message)
-	if user.nick and target == irc.config.channel then
+	if user and user.nick and target == irc.config.channel then
 		irc.sendLocal("-"..user.nick.."@IRC- "..message)
 	end
 end
