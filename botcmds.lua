@@ -171,7 +171,7 @@ irc.register_bot_command("players", {
 		end
 		return true, string.format("%d connected player(s): %s",
 			#players,
-			table.concat(names, ", "),
+			table.concat(names, ", ")
 		)
 	end
 })
