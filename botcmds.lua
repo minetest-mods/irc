@@ -169,8 +169,10 @@ irc.register_bot_command("players", {
 		for _, player in pairs(players) do
 			table.insert(names, player:get_player_name())
 		end
-		return true, "Connected players: "
-				..table.concat(names, ", ")
+		return true, string.format("%d connected player(s): %s",
+			#players,
+			table.concat(names, ", ")
+		)
 	end
 })
 
